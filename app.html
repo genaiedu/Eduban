@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>EDUBAN – Board</title>
+
+  <link rel="icon" type="image/png" sizes="512x512" href="images/logo-512.png"/>
+  <link rel="icon" type="image/png" sizes="192x192" href="images/logo-192.png"/>
+  
+  <script src="fonts/lucide.min.js"></script>
+
+  <link rel="stylesheet" href="style.css?v=28" />
+
+<link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0a0e1a">
+  <meta name="mobile-web-app-capable" content="yes"> <meta name="apple-mobile-web-app-capable" content="yes"> <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="EDUBAN">
+  <link rel="apple-touch-icon" href="images/logo-192.png">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Error:', err));
+      });
+    }
+  </script>
+
+</head>
+  
+<body>
+
+<div id="bg-layer"></div>
+<div id="bg-overlay"></div>
+
+<div id="loading-screen" class="loading">
+  <div class="spinner"></div>
+  <span>Wird geladen…</span>
+</div>
+
+<!-- ── SCHÜLER-LOGIN-SCREEN ───────────────────────────── -->
+<div id="student-auth-screen" style="display:none; position:fixed; inset:0; background:var(--bg-body); z-index:900; overflow-y:auto; flex-direction:column; align-items:center; justify-content:flex-start; padding:20px;">
+  <div class="auth-box" style="max-width:420px; margin:auto;">
+    <div class="auth-logo">
+      <div style="background:#ffffff; border-radius:24px; width:100px; height:100px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 24px rgba(0,0,0,0.15);">
+        <img src="images/logo.png" style="width:78px; height:78px; object-fit:contain;" alt="EDUBAN" onerror="this.style.display='none';"/>
+      </div>
+    </div>
+
+    <!-- Schritt 1 (Standard): Anmelden mit der eigenen Schüler-INI -->
+    <div id="student-step-login" style="display:none;">
+      <div class="auth-title" style="font-size:20px;">Anmelden</div>
+      <div class="auth-subtitle" style="margin-bottom:20px;">Wähle deine persönliche <strong>Schüler-INI-Datei</strong> – mehr brauchst du nicht:</div>
+      <div style="position:relative; width:100%;">
+        <input type="file" id="student-ini-file-input" style="position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:2;" onchange="loadStudentIniFromFile(event)"/>
+        <div class="btn btn-primary" aria-hidden="true" style="width:100%; padding:14px; font-size:15px; display:flex; align-items:center; justify-content:center; gap:8px; pointer-events:none;">
+          <i data-lucide="folder-open" style="width:18px;height:18px;"></i> Schüler-INI auswählen
+        </div>
+      </div>
+      <div id="student-ini-load-error" style="color:#ef4444; font-size:13px; margin-top:12px; min-height:18px;"></div>
+      <div style="text-align:center; margin-top:20px; padding-top:16px; border-top:1px solid var(--border);">
+        <span style="font-size:12px; color:var(--text-muted);">Noch keine Schüler-INI?</span><br>
+        <button onclick="showTeacherSelection()" style="margin-top:6px; background:none; border:none; color:var(--accent); font-size:13px; cursor:pointer; text-decoration:underline; padding:0;">Neu registrieren mit der Tutor-INI.</button>
+      </div>
+    </div>
+
+    <!-- Schritt 2 (Registrierung, Teil 1): Tutor-INI laden -->
+    <div id="student-step-teacher" style="display:none;">
+      <div class="auth-title" style="font-size:20px;">Neu registrieren</div>
+      <div class="auth-subtitle" style="margin-bottom:20px;">Dein Tutor hat dir seine <strong>Tutor-INI-Datei</strong> gegeben. Lade sie hier hoch:</div>
+      <div style="position:relative; width:100%;">
+        <input type="file" id="ini-file-input" style="position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:2;" onchange="loadIniFromFile(event)"/>
+        <div class="btn btn-primary" aria-hidden="true" style="width:100%; padding:14px; font-size:15px; display:flex; align-items:center; justify-content:center; gap:8px; pointer-events:none;">
+          <i data-lucide="folder-open" style="width:18px;height:18px;"></i> Tutor-INI auswählen
+        </div>
+      </div>
+      <div id="ini-load-error" style="color:#ef4444; font-size:13px; margin-top:12px; min-height:18px;"></div>
+      <div style="text-align:center; margin-top:20px; padding-top:16px; border-top:1px solid var(--border);">
+        <span style="font-size:12px; color:var(--text-muted);">Du hast schon eine Schüler-INI?</span><br>
+        <button onclick="showStudentIniLogin()" style="margin-top:6px; background:none; border:none; color:var(--accent); font-size:13px; cursor:pointer; text-decoration:underline; padding:0;">Zurück zur Anmeldung.</button>
+      </div>
+    </div>
+
+    <!-- Schritt 3 (Registrierung, Teil 2): Name → Schüler-INI wird erstellt -->
+    <div id="student-step-register" style="display:none;">
+      <div class="auth-title" style="font-size:20px;">Deine Schüler-INI erstellen</div>
+      <div style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">Tutor: <strong id="student-teacher-label" style="color:var(--text);"></strong></div>
+      <input type="hidden" id="student-teacher-hidden"/>
+      <div style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.3); border-radius:8px; padding:10px 12px; font-size:12px; color:#4ade80; margin:12px 0; line-height:1.5;">
+        <i data-lucide="key-round" style="width:14px;height:14px;vertical-align:-2px;flex-shrink:0;"></i> Es wird eine <strong>Schüler-INI-Datei</strong> erstellt und gespeichert. Sie ist dein Schlüssel: Damit meldest du dich künftig auf jedem Gerät an. <strong>Bewahre sie gut auf!</strong>
+      </div>
+      <div class="form-group">
+        <label>Dein Name</label>
+        <input type="text" id="student-reg-name" placeholder="Vor- und Nachname" autocomplete="name"/>
+      </div>
+      <div id="student-reg-error" style="color:#ef4444; font-size:13px; min-height:18px; margin-bottom:8px;"></div>
+      <button id="student-reg-submit" class="btn btn-primary" onclick="submitStudentRegister()" style="width:100%;">Schüler-INI erstellen &amp; anmelden</button>
+      <div style="text-align:center; margin-top:20px; padding-top:16px; border-top:1px solid var(--border);">
+        <span style="font-size:12px; color:var(--text-muted);">Du hast schon eine Schüler-INI?</span><br>
+        <button onclick="showStudentIniLogin()" style="margin-top:6px; background:none; border:none; color:var(--accent); font-size:13px; cursor:pointer; text-decoration:underline; padding:0;">Zurück zur Anmeldung.</button>
+      </div>
+    </div>
+
+    <div style="margin-top:18px; padding-top:16px; border-top:1px solid var(--border);">
+      <button class="btn btn-ghost" onclick="loginAsGuest('student')" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
+        <i data-lucide="sparkles" style="width:16px;height:16px;"></i> Als Gast testen
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PROFIL-EINGABE LEHRER (erster Start) ──────────── -->
+<div id="auth-screen" style="display:none;">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div style="background:#ffffff; border-radius:24px; width:140px; height:140px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 24px rgba(0,0,0,0.15);">
+        <img src="images/logo.png" style="width:110px; height:110px; object-fit:contain;" alt="EDUBAN" onerror="this.style.display='none';"/>
+      </div>
+    </div>
+
+    <div class="auth-title">Willkommen!</div>
+    <div class="auth-subtitle">Alle Daten bleiben lokal auf diesem Gerät.</div>
+    <div class="error-msg" id="profile-error"></div>
+
+    <div class="form-group">
+      <label>Dein Name</label>
+      <input type="text" id="profile-name" placeholder="z. B. Max Mustermann" autocomplete="name"/>
+    </div>
+
+    <div class="form-group">
+      <label>Gruppe / Klasse <span style="color:var(--text-muted); font-size:11px;">(optional)</span></label>
+      <input type="text" id="profile-group" placeholder="z. B. 10b"/>
+    </div>
+
+    <button class="btn btn-primary" onclick="saveProfile()" style="width:100%; margin-top:8px;">Los geht's</button>
+
+    <button class="btn btn-ghost" onclick="loginAsGuest('teacher')" style="width:100%; margin-top:10px; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <i data-lucide="sparkles" style="width:16px;height:16px;"></i> Als Gast testen
+    </button>
+
+    <div id="first-run-setup" style="display:none; margin-top:16px; padding:14px; border:1px solid rgba(99,102,241,0.25); background:rgba(99,102,241,0.08); border-radius:12px; text-align:left; font-size:13px; line-height:1.55; color:var(--text-muted);">
+      <div style="display:flex; align-items:center; gap:8px; color:var(--text); font-weight:700; margin-bottom:8px;">
+        <i data-lucide="key-round" style="width:16px;height:16px;color:var(--accent);"></i>
+        Tutor-Schlüssel einrichten
+      </div>
+
+      <div>
+        Damit Schülerinnen und Schüler sich bei dir anmelden können, brauchst du deinen Tutor-Schlüssel – ganz ohne Passwort. Lade deinen vorhandenen privaten Tutor-Schlüssel oder erstelle jetzt neue Schlüsseldateien.
+      </div>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
+        <button class="btn-sm btn-sm-primary" onclick="showCreateIniModal()" style="display:flex;align-items:center;gap:6px;">
+          <i data-lucide="key-round" style="width:14px;height:14px;"></i> Tutor-Schlüssel erstellen
+        </button>
+
+        <div style="position:relative; display:inline-flex;">
+          <input
+            type="file"
+            id="teacher-ini-file-input-first-run"
+            style="position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:2;"
+            onchange="loadTeacherIniFromFile(event)"
+          />
+
+          <div
+            class="btn-sm btn-sm-ghost"
+            aria-hidden="true"
+            style="display:flex;align-items:center;gap:6px; pointer-events:none;"
+          >
+            <i data-lucide="folder-open" style="width:14px;height:14px;"></i> INI laden
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tutor-relogin-hint" style="display:none; text-align:center; margin-top:20px; padding-top:16px; border-top:1px solid var(--border);">
+      <span style="font-size:12px; color:var(--text-muted);">Bereits registriert?</span><br>
+      <button onclick="resumeTutorSession()" style="margin-top:6px; background:none; border:none; color:var(--accent); font-size:13px; cursor:pointer; text-decoration:underline; padding:0;">Zurück zur App.</button>
+    </div>
+  </div>
+</div>
+
+
+
+<div id="app-screen">
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
+
+
+  <div class="main-layout">
+    <div class="sidebar" id="sidebar-el">
+      <div class="sidebar-header">
+  <div class="logo-section">
+    <div class="logo-wrapper">
+      <img src="images/logo.png" alt="EDUBAN" onerror="this.style.display='none';"/>
+    </div>
+    <button class="sidebar-close-btn" onclick="closeSidebar()" title="Menü schließen">
+      <i data-lucide="x" style="width:16px;height:16px;"></i>
+    </button>
+  </div>
+  
+  <div id="user-sidebar-info" onclick="openProfileEdit()" style="cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.backgroundColor='var(--bg-hover)'" onmouseout="this.style.backgroundColor='transparent'">
+  
+  <i class="icon-user user-icon" style="flex-shrink: 0; font-size: 16px;"></i>
+  
+  <div style="display: flex; flex-direction: column; overflow: hidden; flex-grow: 1;">
+    <span id="user-name-display" style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Lädt...</span>
+    <span style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+      Gruppe: <span id="sidebar-user-group">...</span>
+    </span>
+    <span id="sidebar-role-badge" style="display:inline-block; margin-top:3px; font-size:10px; font-weight:700; letter-spacing:0.04em; padding:1px 7px; border-radius:20px; background:rgba(99,102,241,0.2); color:#818cf8; border:1px solid rgba(99,102,241,0.35);">Lehrkraft</span>
+  </div>
+
+  <i class="icon-edit" style="color: var(--text-muted); flex-shrink: 0; font-size: 12px;"></i>
+
+</div>
+</div>
+      
+      <div class="sidebar-boards-area">
+        <div class="sidebar-section">
+          <div class="sidebar-label">Meine Boards</div>
+          <div id="boards-list"></div>
+          <button class="btn-new-board" onclick="showNewBoard()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg> Neues Board
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-divider-line"></div>
+        <button class="sidebar-action-btn" onclick="toggleSettingsPanel()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg> Einstellungen
+        </button>
+        <button class="sidebar-action-btn" onclick="openHelp()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Hilfe
+        </button>
+        <button class="sidebar-action-btn" onclick="openAdminArea()" id="sidebar-admin-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg> Admin
+        </button>
+        <button class="sidebar-action-btn" onclick="toggleFilemanagementPanel()">
+          <i data-lucide="hard-drive-download" style="width:16px;height:16px;"></i> Dateien
+        </button>
+        <div class="sidebar-divider-line"></div>
+        <button class="sidebar-action-btn" onclick="openProfileEdit()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profil bearbeiten
+        </button>
+        <div class="sidebar-divider-line"></div>
+        <button class="sidebar-action-btn" id="sidebar-relogin-btn" onclick="loginAsStudentFromSidebar()" style="font-size:12px; opacity:0.75;">
+          <i data-lucide="rotate-ccw" style="width:16px;height:16px;"></i> Neu als Schüler anmelden
+        </button>
+        <button class="sidebar-action-btn" id="sidebar-logout-btn" onclick="logoutUser()" style="color: var(--danger, #ef4444);">
+          <i data-lucide="log-out" style="width:16px;height:16px;"></i> Abmelden
+        </button>
+      </div>
+    </div>
+
+    <div class="board-area" id="board-area">
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">
+          <img src="images/logo.png" alt="EDUBAN" style="width:100%; height:100%; object-fit:contain;" onerror="this.style.display='none';"/>
+        </div>
+        <div class="empty-title">Willkommen!</div>
+        <div class="empty-sub">Erstelle dein erstes Board und organisiere deine Aufgaben.</div>
+        <div class="empty-actions">
+          <button class="btn-create-first" onclick="showNewBoard()">Erstes Board erstellen</button>
+          <button class="btn-create-first" onclick="showImport()">KI-Import</button>
+          <button class="btn-circle empty-menu-btn" onclick="openSidebar()" data-tooltip="Menü öffnen">
+            <i data-lucide="menu"></i>
+          </button>
+        </div>
+      </div>
+      <div id="board-content" style="display:none;">
+
+        
+       <div class="board-header" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <button class="btn-circle" onclick="openSidebar()" data-tooltip="Menü öffnen">
+            <i data-lucide="menu"></i>
+          </button>
+          <div class="board-title-display" id="board-title-display" onclick="editBoardName()" title="Klicken zum Bearbeiten"></div>
+          <input type="text" id="board-title-input" class="board-title-input" style="display:none;" onblur="saveBoardName()" onkeydown="if(event.key === 'Enter') saveBoardName()" />
+
+          <div style="flex:1;"></div>
+
+        <button class="btn-circle" id="btn-aging-pause" onclick="toggleAgingPause()" data-tooltip="Aging pausieren">
+  <i data-lucide="hourglass" id="aging-pause-icon" style="width:20px;height:20px;"></i>
+</button>
+
+          <button class="btn-ideas" onclick="openIdeas()" title="Ideen">
+            <i data-lucide="lightbulb" style="width:16px;height:16px;"></i>
+            <span>Ideen</span>
+            <span class="idea-count-badge" id="idea-count-badge" style="display:none;">0</span>
+          </button>
+
+          <button class="btn-reflection" id="btn-reflection-start" onclick="startReflectionPhase()" title="Reflexionsphase starten" style="display:none;">
+            <i data-lucide="sparkles" style="width:16px;height:16px;"></i>
+            <span>Reflexion</span>
+          </button>
+
+          <!--
+
+<button class="btn-ideas" onclick="openMilestonesModal()" title="Projektphasen">
+
+  <i data-lucide="flag" style="width:16px;height:16px;"></i>
+
+  <span>Meilensteine</span>
+
+</button>
+
+-->
+
+         <button class="btn-circle" id="btn-undo" onclick="undoLastAction()" title="Nichts zum Rückgängigmachen">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+</button>
+
+          <button class="btn-circle" onclick="openUBahnModal()" data-tooltip="Streckennetz">
+            <i data-lucide="train-front"></i>
+          </button>
+
+          <button class="btn-circle" onclick="showExport()" data-tooltip="In Text umwandeln">
+            <i data-lucide="file-text"></i>
+          </button>
+          
+          <button class="btn-circle" onclick="showImport()" data-tooltip="KI Import">
+  <i data-lucide="download"></i>
+</button>
+          
+          <button class="btn-circle" onclick="showAiPrompt()" data-tooltip="KI-Assistent">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+          </button>
+        </div>
+
+        <div id="milestones-panel" class="milestones-panel"></div>
+        
+        <div class="columns-container" id="columns-container"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-ideas" class="modal-overlay" style="display:none;" onclick="closeModal('modal-ideas')">
+  <div class="modal modal-ideas" onclick="event.stopPropagation()">
+    <div class="ideas-header">
+      <div>
+        <div class="modal-title">Ideen</div>
+        <div class="ideas-subtitle">Karten sammeln, bevor sie ins Board wandern.</div>
+      </div>
+      <button class="card-btn" onclick="closeModal('modal-ideas')" title="Schließen">
+        <i data-lucide="x" style="width:16px;height:16px;"></i>
+      </button>
+    </div>
+
+    <div class="ideas-layout">
+      <div class="ideas-form">
+        <div class="form-group">
+          <label>Neue Idee</label>
+          <textarea id="new-idea-text" class="add-card-textarea" rows="3" placeholder="Aufgabe oder Kartenidee beschreiben…"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Beschreibung</label>
+          <textarea id="new-idea-description" class="add-card-textarea" rows="4" placeholder="Optional: Kriterien, Hinweise, Material…"></textarea>
+        </div>
+        <div class="ideas-grid">
+          <div class="form-group">
+            <label>Priorität</label>
+            <select id="new-idea-priority" class="priority-select">
+              <option value="">Keine</option>
+              <option value="hoch">Hoch</option>
+              <option value="mittel">Mittel</option>
+              <option value="niedrig">Niedrig</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fällig</label>
+            <input type="date" id="new-idea-due" class="ideas-input"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Zuweisen an</label>
+          <select id="new-idea-assignee" class="priority-select"></select>
+        </div>
+        <div class="form-group">
+          <label>Zeit</label>
+          <div class="ideas-time-row">
+            <input type="number" id="new-idea-time-d" min="0" placeholder="Tage" class="ideas-input"/>
+            <input type="number" id="new-idea-time-h" min="0" max="23" placeholder="Std." class="ideas-input"/>
+            <input type="number" id="new-idea-time-m" min="0" max="59" placeholder="Min." class="ideas-input"/>
+          </div>
+        </div>
+        <button class="btn-sm btn-sm-primary" onclick="addIdea()" style="width:100%; justify-content:center;">
+          <i data-lucide="plus" style="width:14px;height:14px;"></i> Idee speichern
+        </button>
+      </div>
+
+      <div class="ideas-list-wrap">
+        <div id="ideas-list" class="ideas-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-edit-idea" class="modal-overlay" style="display:none;" onclick="closeModal('modal-edit-idea')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Idee bearbeiten</div>
+    <input type="hidden" id="edit-idea-id"/>
+    <div class="form-group">
+      <label>Text</label>
+      <textarea id="edit-idea-text" class="add-card-textarea" rows="2"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Beschreibung</label>
+      <textarea id="edit-idea-description" class="add-card-textarea" rows="4"></textarea>
+    </div>
+    <div class="ideas-grid">
+      <div class="form-group">
+        <label>Priorität</label>
+        <select id="edit-idea-priority" class="priority-select">
+          <option value="">Keine</option>
+          <option value="hoch">Hoch</option>
+          <option value="mittel">Mittel</option>
+          <option value="niedrig">Niedrig</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Fällig</label>
+        <input type="date" id="edit-idea-due" class="ideas-input"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Zuweisen an</label>
+      <select id="edit-idea-assignee" class="priority-select"></select>
+    </div>
+    <div class="form-group">
+      <label>Zeit</label>
+      <div class="ideas-time-row">
+        <input type="number" id="edit-idea-time-d" min="0" placeholder="Tage" class="ideas-input"/>
+        <input type="number" id="edit-idea-time-h" min="0" max="23" placeholder="Std." class="ideas-input"/>
+        <input type="number" id="edit-idea-time-m" min="0" max="59" placeholder="Min." class="ideas-input"/>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-edit-idea')">Abbrechen</button>
+      <button class="btn-sm btn-sm-primary" onclick="saveEditIdea()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-milestones" class="modal-overlay" style="display:none;" onclick="closeModal('modal-milestones')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:720px; max-height:90vh; display:flex; flex-direction:column;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;">
+      <div>
+        <div class="modal-title">Projektphasen / Meilensteine</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Phasen werden nacheinander erreicht, sobald alle zugeordneten Karten in „Fertig" liegen.</div>
+      </div>
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-milestones')">✕</button>
+    </div>
+    <div id="milestone-card-hint" style="font-size:11px;color:var(--text-muted);line-height:1.5;margin-bottom:12px;"></div>
+    <div id="milestone-list" style="display:flex;flex-direction:column;gap:8px;overflow:auto;min-height:90px;margin-bottom:16px;"></div>
+    <div style="border-top:1px solid var(--border);padding-top:14px;">
+      <input type="hidden" id="milestone-edit-id"/>
+      <div class="form-group">
+        <label>Name der Phase</label>
+        <input type="text" id="milestone-name" class="settings-input" placeholder="z. B. Vorbereitung abgeschlossen" style="width:100%;"/>
+      </div>
+      <div class="form-group" style="margin-top:10px;">
+        <label>Beschreibung</label>
+        <textarea id="milestone-description" class="settings-input" rows="2" placeholder="Woran erkennt man, dass diese Phase erreicht ist?" style="width:100%;resize:vertical;"></textarea>
+      </div>
+      <div class="form-group" style="margin-top:10px;">
+        <label>Zugeordnete Kartenlabels</label>
+        <input type="text" id="milestone-labels" class="settings-input" placeholder="A, B, C" style="width:100%;"/>
+      </div>
+      <div class="modal-actions" style="margin-top:14px;">
+        <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-milestones')">Schließen</button>
+        <button class="btn-sm btn-sm-primary" onclick="saveMilestone()">Phase speichern</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-new-board" class="modal-overlay" style="display:none;" onclick="closeModal('modal-new-board')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:480px;">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:24px;">
+      <div class="wizard-step active" id="ws-1">1</div>
+      <div class="wizard-line"></div>
+      <div class="wizard-step" id="ws-2">2</div>
+      <div class="wizard-line"></div>
+      <div class="wizard-step" id="ws-3">3</div>
+      <span style="margin-left:8px; font-size:13px; color:var(--text-muted);" id="wizard-label">Board benennen</span>
+    </div>
+
+    <div id="wizard-step-1">
+      <div class="modal-title">Wie soll das Board heißen?</div>
+      <div class="form-group" style="margin-top:16px;">
+        <label>Board-Name</label>
+        <input type="text" id="new-board-name" placeholder="z.B. Schulprojekt, Sprint 1, Privat…"/>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-new-board')">Abbrechen</button>
+        <button class="btn-sm btn-sm-primary" onclick="wizardNext(2)">Weiter →</button>
+      </div>
+    </div>
+
+    <div id="wizard-step-2" style="display:none;">
+      <div class="modal-title">Wie viele Personen arbeiten mit?</div>
+      <p style="font-size:13px; color:var(--text-muted); margin:8px 0 20px;">Das WIP-Limit wird automatisch berechnet.</p>
+      <div class="member-count-grid" id="member-count-grid"></div>
+      <div class="modal-actions">
+        <button class="btn-sm btn-sm-ghost" onclick="wizardNext(1)">← Zurück</button>
+        <button class="btn-sm btn-sm-primary" onclick="wizardNext(3)">Weiter →</button>
+      </div>
+    </div>
+
+    <div id="wizard-step-3" style="display:none;">
+      <div class="modal-title">Wie heißen die Teammitglieder?</div>
+      <p style="font-size:13px; color:var(--text-muted); margin:8px 0 16px;">Nicknames oder Vornamen – wie ihr möchtet.</p>
+      <div id="nickname-inputs"></div>
+      <div class="modal-actions">
+        <button class="btn-sm btn-sm-ghost" onclick="wizardNext(2)">← Zurück</button>
+        <button class="btn-sm btn-sm-primary" onclick="createBoard()">Board erstellen ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-new-column" class="modal-overlay" style="display:none;" onclick="closeModal('modal-new-column')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Neue Spalte hinzufügen</div>
+    <div class="form-group">
+      <label>Spaltenname</label>
+      <input type="text" id="new-column-name" placeholder="z.B. Offen, In Bearbeitung, Fertig…"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-new-column')">Abbrechen</button>
+      <button class="btn-sm btn-sm-primary" onclick="createColumn()">Hinzufügen</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-edit-card" class="modal-overlay" style="display:none;" onclick="closeModal('modal-edit-card')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Karte bearbeiten</div>
+    <input type="hidden" id="edit-card-id"/>
+    <input type="hidden" id="edit-card-col"/>
+
+    <div id="edit-card-milestone-info" style="margin:0 0 12px;padding:9px 11px;border:1px solid rgba(77,127,255,0.24);border-radius:8px;background:rgba(77,127,255,0.08);"></div>
+    
+    <div class="form-group">
+      <label>Text</label>
+      <textarea id="edit-card-text" class="add-card-textarea" rows="2"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Beschreibung</label>
+      <textarea id="edit-card-description" rows="3" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Ergebnis</label>
+      <textarea id="edit-card-result" rows="3" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Geschätzte Bearbeitungszeit</label>
+      <div style="display: flex; gap: 10px;">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+          <input type="number" id="edit-card-time-d" min="0" placeholder="0" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+          <span style="font-size: 10px; color: var(--text-muted);">Tage</span>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+          <input type="number" id="edit-card-time-h" min="0" max="23" placeholder="0" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+          <span style="font-size: 10px; color: var(--text-muted);">Stunden</span>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+          <input type="number" id="edit-card-time-m" min="0" max="59" placeholder="0" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+          <span style="font-size: 10px; color: var(--text-muted);">Minuten</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top: 12px;">
+      <div class="form-group">
+        <label>Priorität</label>
+        <select id="edit-card-priority" class="priority-select" style="width:100%">
+          <option value="">Keine</option>
+          <option value="hoch">🔴 Hoch</option>
+          <option value="mittel">🟡 Mittel</option>
+          <option value="niedrig">🟢 Niedrig</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Fälligkeitsdatum</label>
+        <input type="date" id="edit-card-due" style="color-scheme:dark; width:100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);"/>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label id="edit-card-assignee-label">Zuweisen an</label>
+      <select id="edit-card-assignee" class="priority-select" style="width:100%">
+        <option value="">– Niemand –</option>
+      </select>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-edit-card')">Abbrechen</button>
+      <button class="btn-sm btn-sm-primary" onclick="saveEditCard()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+  
+<div id="modal-edit-board-meta" class="modal-overlay" style="display:none;" onclick="closeModal('modal-edit-board-meta')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Board-Einstellungen</div>
+    
+    <input type="hidden" id="edit-board-id" />
+
+    <div class="form-group">
+      <label>Board-Name</label>
+      <input type="text" id="edit-board-name" style="width:100%; padding: 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);" />
+    </div>
+    
+    <div class="form-group">
+      <label>Zugeordnete Lerngruppe (GroupID)</label>
+      <input type="text" id="edit-board-group" style="width:100%; padding: 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);" />
+    </div>
+
+    <div id="board-members-list" style="margin-bottom:12px;"></div>
+    
+    <div id="board-edit-error" style="color: #ef4444; font-size: 13px; margin-bottom: 10px;"></div>
+
+    <div class="modal-actions">
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-edit-board-meta')">Abbrechen</button>
+      <button class="btn-sm btn-sm-primary" onclick="saveBoardMeta()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-edit-profile" class="modal-overlay" style="display:none;" onclick="closeModal('modal-edit-profile')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Profil bearbeiten</div>
+    
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" id="profile-name" style="width:100%; padding: 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);" />
+    </div>
+    
+    <div class="form-group">
+      <label>Lerngruppe (GroupID)</label>
+      <input type="text" id="profile-group" style="width:100%; padding: 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);" />
+    </div>
+    
+    <div class="form-group">
+      <label>E-Mail-Adresse (nicht änderbar)</label>
+      <input type="email" id="profile-email" disabled style="width:100%; padding: 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-muted); opacity: 0.7; cursor: not-allowed;" />
+    </div>
+    
+    <div id="profile-error" style="color: #ef4444; font-size: 13px; margin-bottom: 10px;"></div>
+
+    <div class="modal-actions">
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-edit-profile')">Abbrechen</button>
+      <button class="btn-sm btn-sm-primary" onclick="saveProfile()">Speichern</button>
+    </div>
+  </div>
+</div>
+  
+<div id="settings-panel" style="display:none;">
+  <div class="settings-overlay" onclick="toggleSettingsPanel()"></div>
+  <div class="settings-drawer">
+    <div class="settings-header">
+      <span class="settings-title" style="display:flex;align-items:center;gap:8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg> 
+        Einstellungen
+      </span>
+      <button class="settings-close" onclick="toggleSettingsPanel()">✕</button>
+    </div>
+
+    <div class="settings-body">
+      <div class="settings-label">Erscheinungsbild</div>
+      <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <button id="btn-theme-dark" class="btn-sm btn-sm-primary" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="setTheme('dark')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg> Dunkel
+        </button>
+        <button id="btn-theme-light" class="btn-sm btn-sm-ghost" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="setTheme('light')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg> Hell
+        </button>
+      </div>
+
+      <div class="settings-label">Panel-Transparenz</div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+        <span style="font-size:12px;color:var(--text-muted);">Transparent</span>
+        <input type="range" id="overlay-slider" min="20" max="95" step="5" value="72" style="flex:1; accent-color: var(--accent); cursor:pointer;" oninput="setOverlay(this.value)"/>
+        <span style="font-size:12px;color:var(--text-muted);">Undurchsichtig</span>
+      </div>
+
+      <div class="settings-label">Voreinstellungen</div>
+      <div class="bg-presets" id="bg-presets">
+        <div class="bg-preset active" data-bg="H1.png" style="background-image:url('images/H1.png'); background-size:cover; background-position:center;" onclick="setBg('H1.png')">
+          <span>Standard</span>
+        </div>
+      </div>
+      <div class="settings-label" style="margin-top:20px;" id="img-thumbnails-label">Hintergrundbilder (H1–H20)</div>
+      <div class="bg-presets" id="custom-images-list"></div>
+    </div>
+  </div>
+</div>
+  
+<div id="app-footer" style="position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%); z-index: 10; pointer-events: none;">
+  <span class="app-footer-pill">
+    <a onclick="openLegal()" class="app-footer-link">Impressum &amp; Datenschutz</a>
+  </span>
+</div>
+
+<div id="modal-legal" class="modal-overlay" style="display:none;" onclick="closeModal('modal-legal')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:620px; max-height:80vh; overflow-y:auto;">
+    <div style="display:flex; gap:12px; margin-bottom:24px;">
+      <button id="tab-impressum" class="btn-sm btn-sm-primary" onclick="showLegalTab('impressum')">Impressum</button>
+      <button id="tab-datenschutz" class="btn-sm btn-sm-ghost" onclick="showLegalTab('datenschutz')">Datenschutzerklärung</button>
+    </div>
+    <div id="legal-impressum">
+      <h2 style="font-size:18px; font-weight:700; margin-bottom:16px;">Impressum</h2>
+      <p style="font-size:13px; line-height:1.7; color:var(--text-muted);">
+        <strong style="color:var(--text);">Angaben gemäß § 5 TMG</strong><br><br>
+        <strong style="color:var(--text);">Betreiber</strong><br>
+        Claus Unterberg<br>
+        c/o Gymnasium Thomaeum Kempen<br>
+        Am Gymnasium 4<br>
+        47906 Kempen<br><br>
+        <strong style="color:var(--text);">Kontakt</strong><br>
+        E-Mail: claus.unterberg@thomaeum.de<br><br>
+        <strong style="color:var(--text);">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</strong><br>
+        Claus Unterberg, Am Gymnasium 4, 47906 Kempen<br><br>
+        <strong style="color:var(--text);">Haftungsausschluss</strong><br>
+        Die Inhalte dieser App wurden mit größtmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte kann jedoch keine Gewähr übernommen werden. Als Diensteanbieter bin ich gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich.<br><br>
+        <strong style="color:var(--text);">Technische Grundlage</strong><br>
+        EDUBAN ist eine Progressive Web App (PWA), die grundsätzlich lokal auf dem Gerät des Nutzers ausgeführt wird. Boards, Einstellungen und Bewertungen werden zunächst im lokalen Browserspeicher (localStorage) des jeweiligen Geräts gespeichert. Optional kann die Datenbank-Funktion genutzt werden; private Schüler-Sicherungen, bewusst weitergeleitete Schülerabgaben und Rückgaben werden dort als verschlüsselte EDUBAN-Images mit technischen Kennungen übertragen. Offene Board-Vorlagen werden getrennt gespeichert und sind bewusst als neutrale Startboards gedacht.
+      </p>
+    </div>
+    <div id="legal-datenschutz" style="display:none;">
+      <h2 style="font-size:18px; font-weight:700; margin-bottom:16px;">Datenschutzerklärung</h2>
+      <div style="font-size:13px; line-height:1.7; color:var(--text-muted);">
+        <strong style="color:var(--text);">1. Verantwortlicher</strong><br>
+        Claus Unterberg, Am Gymnasium 4, 47906 Kempen<br>
+        E-Mail: claus.unterberg@thomaeum.de<br><br>
+
+        <strong style="color:var(--text);">2. Erhobene und gespeicherte Daten</strong><br>
+        EDUBAN erhebt und verarbeitet ausschließlich Daten, die Nutzer selbst eingeben:<br>
+        – Name (freiwillige Angabe beim ersten Start)<br>
+        – Von Nutzern erstellte Inhalte (Board-Namen, Kartentexte, Kommentare)<br>
+        – Zeitstempel der Erstellung und Bearbeitung von Inhalten<br>
+        Alle Daten werden zunächst <strong style="color:var(--text);">lokal auf dem jeweiligen Gerät</strong> im Browser-Speicher (localStorage) gespeichert. Eine Übertragung findet nur statt, wenn die Datenbank-Funktion ausdrücklich genutzt wird. Private Schüler-Sicherungen, bewusst weitergeleitete Schülerabgaben und Rückgaben werden dabei als verschlüsselte EDUBAN-Images gespeichert. Board-Vorlagen sind eine bewusste Ausnahme: Sie sind offene, neutrale Startboards und sollten keine vertraulichen Schülerdaten oder Tutor-Noten enthalten.<br><br>
+
+        <strong style="color:var(--text);">3. Zweck der Datenverarbeitung</strong><br>
+        Die gespeicherten Daten dienen ausschließlich der Bereitstellung der Kanban-Funktionalität auf dem jeweiligen Gerät. Eine Weitergabe an Dritte findet nicht statt.<br><br>
+
+        <strong style="color:var(--text);">3a. Datenaustausch zwischen Tutor und Schülerinnen / Schülern</strong><br>
+        Der Datenaustausch erfolgt durch verschlüsselte Dateien (INI-Dateien, Image-Dateien) oder optional über die Datenbank-Funktion. Schülerinnen und Schüler können dort private Sicherungen speichern, laden und löschen. Nur über „An den Tutor weiterleiten“ wird ein Schüler-Image für den Tutor sichtbar; Tutor-Rückgaben werden ebenfalls verschlüsselt übertragen. Zusätzlich können Tutoren offene Board-Vorlagen bereitstellen, die Schülerinnen und Schüler als Startpunkt laden können. Die Zuordnung erfolgt über technische Kennungen; ein Firebase-Konto mit sichtbarer Anmeldung ist nicht erforderlich, da die App eine anonyme Anmeldung nutzt.<br><br>
+
+        <strong style="color:var(--text);">4. Hosting über GitHub Pages</strong><br>
+        Die App wird über GitHub Pages (GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA) bereitgestellt. Beim Aufruf der App kann GitHub technische Zugriffsdaten erfassen (z. B. IP-Adresse, Zeitpunkt des Zugriffs). Diese Daten werden von GitHub verarbeitet und liegen außerhalb unseres Einflussbereichs. Weitere Informationen: <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#data-collection" target="_blank" style="color:var(--accent);">GitHub Pages Datenschutz</a><br>
+        Bei Nutzung der optionalen Datenbank-Funktion werden verschlüsselte EDUBAN-Pakete in Firebase gespeichert. Offene Board-Vorlagen werden in einem getrennten Bereich gespeichert und dürfen keine vertraulichen Schülerdaten oder Tutor-Noten enthalten. Alle Schriftarten und Icons sind lokal in der App enthalten.<br><br>
+
+        <strong style="color:var(--text);">5. Speicherdauer</strong><br>
+        Daten bleiben auf dem Gerät gespeichert bis der Nutzer sie über die Abmelden-Funktion löscht oder den Browser-Speicher manuell leert.<br><br>
+
+        <strong style="color:var(--text);">6. Rechte der betroffenen Personen</strong><br>
+        Gemäß DSGVO haben Nutzer folgende Rechte:<br>
+        – Recht auf Auskunft (Art. 15 DSGVO)<br>
+        – Recht auf Berichtigung (Art. 16 DSGVO)<br>
+        – Recht auf Löschung (Art. 17 DSGVO)<br>
+        – Recht auf Einschränkung der Verarbeitung (Art. 18 DSGVO)<br>
+        – Recht auf Datenübertragbarkeit (Art. 20 DSGVO)<br>
+        – Widerspruchsrecht (Art. 21 DSGVO)<br><br>
+        Zur Ausübung dieser Rechte wende dich an: claus.unterberg@thomaeum.de<br><br>
+
+        <strong style="color:var(--text);">7. Beschwerderecht</strong><br>
+        Du hast das Recht, dich bei der zuständigen Aufsichtsbehörde zu beschweren. In NRW ist dies der Landesbeauftragte für Datenschutz und Informationsfreiheit (LDI NRW), Postfach 20 04 44, 40102 Düsseldorf.<br><br>
+
+        <strong style="color:var(--text);">8. Cookies und lokale Speicherung</strong><br>
+        Diese App verwendet keinen Cookies zu Tracking-Zwecken. Es wird ausschließlich der lokale Browserspeicher (localStorage) genutzt, um Benutzereinstellungen (Hintergrundbild, Transparenz) zu speichern. Diese Daten verlassen das Gerät nicht.<br><br>
+
+        <strong style="color:var(--text);">Stand:</strong> März 2026
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-legal')">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-help" class="modal-overlay" style="display:none;" onclick="closeModal('modal-help')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:660px; max-height:85vh; overflow-y:auto; position:relative;">
+    
+    <button class="btn-sm btn-sm-ghost" style="position:sticky; top:0; right:0; float:right; background:var(--bg-card); z-index:10;" onclick="closeModal('modal-help')">✕ Schließen</button>
+    <div style="clear:both;"></div>
+
+    <div id="help-content-container"></div>
+    
+  </div>
+</div>
+
+<div id="modal-create-ini" class="modal-overlay" style="display:none;" onclick="closeModal('modal-create-ini')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:430px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+      <h3 style="margin:0; display:flex; align-items:center; gap:8px;"><i data-lucide="key-round" style="width:18px;height:18px;"></i> Tutor-Schlüssel erstellen</h3>
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-create-ini')">✕</button>
+    </div>
+    <div style="font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">
+      Es werden <strong style="color:var(--text);">zwei Dateien</strong> erstellt – ganz ohne Passwort:<br>
+      <strong style="color:var(--text);">1. Privater Tutor-Schlüssel</strong> („…SCHLUESSEL-privat.ini") – bleibt bei dir. Er ersetzt das Masterpasswort: Damit speicherst und öffnest du alles.<br>
+      <strong style="color:var(--text);">2. Verteil-INI</strong> („…fuer-schueler.ini") – nur diese Datei gibst du an deine Schülerinnen und Schüler weiter.
+    </div>
+    <div id="ini-create-error" class="error-msg"></div>
+    <div class="form-group">
+      <label>Name der Lehrkraft</label>
+      <input type="text" id="ini-teacher-name" class="settings-input" placeholder="z. B. Max Mustermann"/>
+    </div>
+    <div class="help-tip" style="margin-top:14px;">
+      <div class="help-tip-title">Wichtig</div>
+      <p style="margin-top:4px; margin-bottom:0;">Bewahre den privaten Tutor-Schlüssel sicher auf (z. B. USB-Stick + Sicherungskopie). Wer die Datei hat, kann alle Schüler-Abgaben öffnen. Ohne sie kommst auch du nicht mehr an die Abgaben heran.</p>
+    </div>
+    <div class="modal-actions" style="margin-top:18px;">
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-create-ini')">Abbrechen</button>
+      <button id="ini-create-btn" class="btn-sm btn-sm-primary" onclick="createTeacherIniFile()" style="display:flex;align-items:center;gap:6px;">
+        <i data-lucide="key-round" style="width:14px;height:14px;"></i> Schlüsseldateien erstellen &amp; speichern
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-admin-login" class="modal-overlay" style="display:none;" onclick="closeModal('modal-admin-login')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:400px; background:rgba(var(--panel-rgb),0.85); backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px); border:1px solid rgba(100,160,255,0.25); box-shadow:0 8px 40px rgba(0,0,20,0.6);">
+    <div style="text-align:center; margin-bottom:20px;">
+      <div style="margin-bottom:12px; display:flex; justify-content:center;">
+        <div style="background:var(--surface2);backdrop-filter:blur(12px);border:1px solid rgba(100,160,255,0.25);border-radius:16px;padding:16px;display:inline-flex;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+        </div>
+      </div>
+      <div class="modal-title" style="margin-bottom:4px;">Administrator-Bereich</div>
+      <div style="font-size:13px; color:var(--text-muted);">Bitte Admin-Passwort eingeben</div>
+    </div>
+    <div class="error-msg" id="admin-login-error"></div>
+    <div class="form-group">
+      <label>Admin-Passwort</label>
+      <input type="password" id="admin-password-input" placeholder="••••••••"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-admin-login')">Abbrechen</button>
+      <button class="btn-sm btn-sm-primary" onclick="doAdminLogin()">Einloggen</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-admin-setup" class="modal-overlay" style="display:none;" onclick="closeModal('modal-admin-setup')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:400px; background:rgba(var(--panel-rgb),0.85); backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px); border:1px solid rgba(100,160,255,0.25); box-shadow:0 8px 40px rgba(0,0,20,0.6);">
+    <div style="text-align:center; margin-bottom:20px;">
+      <div style="margin-bottom:12px; display:flex; justify-content:center;">
+        <div style="background:var(--surface2);backdrop-filter:blur(12px);border:1px solid rgba(100,160,255,0.25);border-radius:16px;padding:16px;display:inline-flex;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+      </div>
+      <div class="modal-title" style="margin-bottom:4px;">Admin-Passwort festlegen</div>
+      <div style="font-size:13px; color:var(--text-muted);">Noch kein Admin-Passwort gesetzt. Lege jetzt eines fest.</div>
+    </div>
+    <div class="form-group">
+      <label>Neues Admin-Passwort</label>
+      <input type="password" id="admin-setup-pw1" placeholder="Min. 6 Zeichen"/>
+    </div>
+    <div class="form-group">
+      <label>Passwort wiederholen</label>
+      <input type="password" id="admin-setup-pw2" placeholder="Wiederholen"/>
+    </div>
+    <div class="error-msg" id="admin-setup-error"></div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-admin-setup')">Abbrechen</button>
+      <button class="btn-sm btn-sm-primary" onclick="doAdminSetup()">Passwort speichern</button>
+    </div>
+  </div>
+</div>
+
+<div id="admin-panel" style="display:none;">
+  <div class="settings-overlay" onclick="closeAdminPanel()"></div>
+  <div class="settings-drawer" style="width:420px;">
+    
+    <div class="settings-header">
+      <span class="settings-title" style="display:flex;align-items:center;gap:8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg> 
+        Admin-Bereich
+      </span>
+      <button class="settings-close" onclick="closeAdminPanel()">✕</button>
+    </div>
+
+    <div class="settings-body">
+      
+      <div id="superadmin-toggle-wrapper" style="display:none; align-items:center; background:rgba(77,127,255,0.1); padding:12px; border-radius:10px; margin-bottom:20px; border:1px solid var(--primary); justify-content:space-between; cursor:pointer;" onclick="const cb = document.getElementById('superadmin-mode-checkbox'); cb.checked = !cb.checked; updateSuperadminMode();">
+        <div style="flex:1;">
+          <div id="superadmin-status-text" style="font-size:13px; font-weight:700; color:var(--primary);">Superadmin-Modus: AUS</div>
+          <div style="font-size:10px; opacity:0.6;">Zeigt alle Boards der Schule</div>
+        </div>
+        <div id="superadmin-switch-bg" style="position:relative; width:40px; height:22px; background:#333; border-radius:20px; border:1px solid rgba(255,255,255,0.1); transition:0.3s;">
+          <input type="checkbox" id="superadmin-mode-checkbox" style="display:none;">
+          <div id="superadmin-knob" style="position:absolute; width:16px; height:16px; background:white; border-radius:50%; top:2px; left:2px; transition:0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.4);"></div>
+        </div>
+      </div>
+      <div id="admin-global-warning" style="display:none; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.4); padding:12px; border-radius:8px; margin-bottom:16px;">
+        <div style="color:#f59e0b; font-weight:600; font-size:13px; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+          Benotung ausstehend
+        </div>
+        <div id="admin-global-warning-text" style="font-size:12px; color:var(--text-muted); line-height:1.5;"></div>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px;">
+        <button id="admin-tab-group-btn" class="btn-sm btn-sm-primary" onclick="showAdminTab('group')">Gruppen-Boards</button>
+        <button id="admin-tab-users-btn" class="btn-sm btn-sm-ghost" style="display:none;" onclick="showAdminTab('users')">Nutzer (Superadmin)</button>
+        <button id="admin-tab-emails-btn" class="btn-sm btn-sm-ghost" style="display:none;" onclick="showAdminTab('emails')">System-Admins</button>
+      </div>
+
+      <div id="admin-tab-group">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="settings-label" id="admin-current-group-label" style="margin:0;">Boards deiner Gruppe</div>
+          <button class="btn-sm btn-sm-primary" onclick="toggleInviteBox()" style="display:flex; align-items:center; gap:5px; padding:4px 8px; font-size:11px;">
+            <i data-lucide="share-2" style="width:12px;height:12px;"></i> Einladen
+          </button>
+        </div>
+        <div id="admin-invite-box" style="display:none; background:rgba(77,127,255,0.1); border:1px solid var(--accent); padding:10px; border-radius:8px; margin-bottom:16px;">
+          <div style="font-size:10px; font-weight:700; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase;">Link für Schülerinnen und Schüler:</div>
+          <div style="display:flex; gap:6px;">
+            <input type="text" id="admin-invite-url-field" readonly class="settings-input" style="flex:1; font-size:11px; height:28px; background:rgba(0,0,0,0.2);">
+            <button class="btn-sm btn-sm-primary" onclick="copyAdminInvite()" style="height:28px; font-size:11px;">Kopieren</button>
+          </div>
+        </div>
+        <div id="admin-group-boards-list"></div>
+      </div>
+
+      <div id="admin-tab-users" style="display:none;">
+        <div class="settings-label">Alle registrierten Nutzer & Boards</div>
+        <div id="admin-users-list"></div>
+        <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); text-align: center;">
+          <button class="btn-sm btn-sm-ghost" style="color: #ef4444;" onclick="deleteGuestBoards()">
+              Gast-Boards bereinigen
+          </button>
+        </div>
+      </div>
+
+      <div id="admin-tab-emails" style="display:none;">
+        <div class="settings-label">Admin-Berechtigungen</div>
+        <div id="admin-emails-list" style="margin-bottom:16px;"></div>
+        <div style="display:flex; gap:8px;">
+          <input type="email" id="admin-new-email" class="settings-input" style="flex:1;" placeholder="neue@email.de"/>
+          <button class="btn-sm btn-sm-primary" onclick="addAdminEmail()">＋</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── DATEIVERWALTUNG PANEL ──────────────────────────── -->
+<div id="filemanagement-panel" style="display:none;">
+  <div class="settings-overlay" onclick="closeFilemanagementPanel()"></div>
+  <div class="settings-drawer" style="width:340px;">
+    <div class="settings-header">
+      <span class="settings-title" style="display:flex;align-items:center;gap:8px;">
+        <i data-lucide="hard-drive-download" style="width:16px;height:16px;"></i>
+        Dateiverwaltung
+      </span>
+      <button class="settings-close" onclick="closeFilemanagementPanel()">✕</button>
+    </div>
+    <div class="settings-body">
+
+      <div class="settings-label">Export &amp; Import</div>
+      <button class="sidebar-action-btn" style="width:100%;margin-bottom:8px;" onclick="exportDataAsFile()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Alles exportieren &amp; sichern
+      </button>
+      <button id="sidebar-versions-btn" class="sidebar-action-btn" style="width:100%;margin-bottom:8px;display:none;" onclick="showVersionHistory()">
+        <i data-lucide="history" style="width:16px;height:16px;"></i> Versionsverlauf
+      </button>
+      <button class="sidebar-action-btn" style="width:100%;margin-bottom:20px;" onclick="document.getElementById('backup-file-input').click()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Importieren (.json)
+      </button>
+      <input type="file" id="backup-file-input" style="display:none;" onchange="importDataFromFile(event)"/>
+
+      <div class="settings-label">Vorlagen</div>
+      <button id="sidebar-template-export-btn" class="sidebar-action-btn" style="width:100%;margin-bottom:8px;" onclick="exportTemplateBoardAsFile()">
+        <i data-lucide="layout-template" style="width:16px;height:16px;"></i> Board als Vorlage exportieren
+      </button>
+      <button class="sidebar-action-btn" style="width:100%;margin-bottom:8px;" onclick="document.getElementById('template-file-input').click()">
+        <i data-lucide="file-plus-2" style="width:16px;height:16px;"></i> Vorlage importieren (.json)
+      </button>
+      <input type="file" id="template-file-input" style="display:none;" onchange="importTemplateFromFile(event)"/>
+      <button id="sidebar-template-cloud-save-btn" class="sidebar-action-btn" style="width:100%;margin-bottom:8px;" onclick="saveTemplateBoardToCloud()">
+        <i data-lucide="cloud-upload" style="width:16px;height:16px;"></i> Vorlage in Datenbank speichern
+      </button>
+      <button class="sidebar-action-btn" style="width:100%;margin-bottom:20px;" onclick="showCloudTemplates()">
+        <i data-lucide="cloud-download" style="width:16px;height:16px;"></i> Vorlage aus Datenbank laden
+      </button>
+
+      <div class="settings-label">Datenbank</div>
+      <button id="sidebar-cloud-save-btn" class="sidebar-action-btn" style="width:100%;margin-bottom:8px;" onclick="saveCurrentFileToCloud()">
+        <i data-lucide="cloud-upload" style="width:16px;height:16px;"></i> <span id="sidebar-cloud-save-label">Verschlüsselt in Datenbank speichern</span>
+      </button>
+      <button id="sidebar-forward-tutor-btn" class="sidebar-action-btn" style="width:100%;margin-bottom:8px;display:none;" onclick="forwardCurrentFileToTutor()">
+        <i data-lucide="send" style="width:16px;height:16px;"></i> An den Tutor weiterleiten
+      </button>
+      <button id="sidebar-submission-file-btn" class="sidebar-action-btn" style="width:100%;margin-bottom:8px;display:none;" onclick="saveSubmissionAsFile()">
+        <i data-lucide="file-down" style="width:16px;height:16px;"></i> Abgabe als Datei speichern
+      </button>
+      <button class="sidebar-action-btn" style="width:100%;margin-bottom:20px;" onclick="showCloudFiles()">
+        <i data-lucide="cloud-download" style="width:16px;height:16px;"></i> Aus Datenbank laden
+      </button>
+
+      <div id="fm-assessment-section">
+        <div class="settings-label">Noten-Sicherung</div>
+        <button class="sidebar-action-btn" style="width:100%;margin-bottom:8px;" onclick="exportAssessmentBackupAsFile()">
+          <i data-lucide="shield-check" style="width:16px;height:16px;"></i> Noten sichern
+        </button>
+        <button class="sidebar-action-btn" style="width:100%;margin-bottom:20px;" onclick="document.getElementById('assessment-backup-file-input').click()">
+          <i data-lucide="shield-plus" style="width:16px;height:16px;"></i> Noten wiederherstellen
+        </button>
+        <input type="file" id="assessment-backup-file-input" style="display:none;" onchange="importAssessmentBackupFromFile(event)"/>
+      </div>
+
+<div class="settings-label" id="fm-ini-label">Tutor-Schlüssel</div>
+
+<button class="sidebar-action-btn" style="width:100%;margin-bottom:8px;" id="sidebar-ini-btn" onclick="showCreateIniModal()">
+  <i data-lucide="key-round" style="width:16px;height:16px;"></i> Tutor-Schlüssel erstellen
+</button>
+
+<div style="position:relative; width:100%; margin-bottom:20px;">
+  <input
+    type="file"
+    id="teacher-ini-file-input"
+    style="position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:2;"
+    onchange="loadTeacherIniFromFile(event)"
+  />
+
+  <div
+    class="sidebar-action-btn"
+    id="sidebar-load-ini-btn"
+    aria-hidden="true"
+    style="width:100%; pointer-events:none;"
+  >
+    <i data-lucide="folder-open" style="width:16px;height:16px;"></i> INI laden
+  </div>
+</div>
+
+      <button class="sidebar-action-btn" style="width:100%;display:none;" id="sidebar-return-to-student-btn" onclick="exportForStudent()">
+        <i data-lucide="send" style="width:16px;height:16px;"></i> An SchülerIn zurückgeben
+      </button>
+      <button class="sidebar-action-btn" style="width:100%;display:none;margin-top:8px;" id="sidebar-return-cloud-btn" onclick="returnForStudentToCloud()">
+        <i data-lucide="cloud-upload" style="width:16px;height:16px;"></i> Rückgabe in Datenbank speichern
+      </button>
+
+    </div>
+  </div>
+</div>
+
+
+<div id="modal-wip" class="modal-overlay" style="display:none;" onclick="closeModal('modal-wip')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">WIP-Limit festlegen</div>
+    <input type="hidden" id="wip-col-id"/>
+    <div class="form-group">
+      <label>Maximale Kartenanzahl (0 = kein Limit)</label>
+      <input type="number" id="wip-limit-input" min="0" max="99" placeholder="z.B. 3"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-wip')">Abbrechen</button>
+      <button class="btn-sm btn-sm-primary" onclick="saveWipLimit()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-ai-prompt" class="modal-overlay" style="display:none;" onclick="closeModal('modal-ai-prompt')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:680px; max-height:90vh; display:flex; flex-direction:column;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-shrink:0;">
+      <div class="modal-title" style="display:flex; align-items:center; gap:10px; margin-bottom:0;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+        KI-Assistent – Prompt
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button id="ai-prompt-copy-btn" class="btn-sm btn-sm-primary" onclick="copyAiPrompt()" style="display:flex; align-items:center; gap:6px;">Prompt kopieren</button>
+        <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-ai-prompt')">✕ Schließen</button>
+      </div>
+    </div>
+    <pre id="ai-prompt-content" style="flex: 1; overflow-y: auto; background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; font-family: 'DM Mono', 'Courier New', monospace; font-size: 12px; line-height: 1.75; color: var(--text); white-space: pre-wrap; word-break: break-word; margin: 0;"></pre>
+  </div>
+</div>
+
+<div id="modal-import" class="modal-overlay" style="display:none;" onclick="closeModal('modal-import')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:660px; max-height:90vh; display:flex; flex-direction:column;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; flex-shrink:0;">
+      <div class="modal-title" style="display:flex; align-items:center; gap:10px; margin-bottom:0;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        KI Import
+      </div>
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-import')">✕ Schließen</button>
+    </div>
+    <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:12px; min-height:0;">
+      <textarea id="import-textarea" style="flex-shrink: 0; height: 200px; background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; font-family: 'DM Mono', 'Courier New', monospace; font-size: 12px; line-height: 1.7; color: var(--text); resize: vertical; outline: none; width: 100%;" placeholder="Exportierten Board-Text hier einfügen…"></textarea>
+      <div id="import-error" style="display:none; padding:10px 14px; border-radius:8px; border:1px solid rgba(240,82,82,0.3); background:rgba(240,82,82,0.08); font-size:12px; color:#f87171; flex-shrink:0;"></div>
+      <div id="import-preview" style="display:none; padding:12px 16px; border-radius:10px; border:1px solid rgba(77,127,255,0.25); background:rgba(77,127,255,0.07); font-size:12px; color:var(--text-muted); line-height:1.8; flex-shrink:0;"></div>
+    </div>
+    <div style="display:flex; gap:10px; justify-content:flex-end; flex-shrink:0; margin-top:14px; padding-top:14px; border-top:1px solid var(--border);">
+      <button class="btn-sm btn-sm-ghost" onclick="parseImportPreview()">Vorschau</button>
+      <button id="import-confirm-btn" class="btn-sm btn-sm-primary" style="display:none;" onclick="confirmImport()">Jetzt importieren</button>
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-import')">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-export" class="modal-overlay" style="display:none;" onclick="closeModal('modal-export')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:700px; max-height:90vh; display:flex; flex-direction:column;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-shrink:0;">
+      <div class="modal-title" style="display:flex; align-items:center; gap:10px; margin-bottom:0;">
+        <i data-lucide="file-text" style="width:18px;height:18px;"></i>
+        In Text umwandeln
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button id="export-copy-btn" class="btn-sm btn-sm-primary" onclick="copyExportToClipboard()" style="display:flex; align-items:center; gap:6px;">In Zwischenablage kopieren</button>
+        <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-export')">✕ Schließen</button>
+      </div>
+    </div>
+    <pre id="export-content" style="flex: 1; overflow-y: auto; background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; font-family: 'DM Mono', 'Courier New', monospace; font-size: 12.5px; line-height: 1.7; color: var(--text); white-space: pre-wrap; word-break: break-word; margin: 0;">Lade…</pre>
+  </div>
+</div>
+
+<div id="modal-cloud-files" class="modal-overlay" style="display:none;" onclick="closeModal('modal-cloud-files')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:720px; max-height:90vh; display:flex; flex-direction:column;">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; flex-shrink:0;">
+      <div class="modal-title" style="display:flex; align-items:center; gap:10px; margin-bottom:0;">
+        <i data-lucide="cloud" style="width:18px;height:18px;"></i>
+        <span id="cloud-files-title">Datenbank-Dateien</span>
+      </div>
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-cloud-files')">✕ Schließen</button>
+    </div>
+    <div id="cloud-files-list" style="flex:1; overflow:auto; min-height:180px;"></div>
+  </div>
+</div>
+
+
+<div id="modal-ubahn" class="modal-overlay" style="display:none;" onclick="closeModal('modal-ubahn')">
+  <div class="modal" id="modal-ubahn-inner" onclick="event.stopPropagation()" style="position:relative;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-shrink:0;flex-wrap:wrap;gap:8px;">
+      <div class="modal-title" style="display:flex;align-items:center;gap:10px;margin-bottom:0;">
+        <i data-lucide="train-front" style="width:18px;height:18px;"></i>
+        Streckennetz
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button id="ubahn-back-btn" class="btn-sm btn-sm-ghost" style="display:none;" onclick="renderUBahnMap()">← Gesamtnetz</button>
+        <button onclick="toggleUBahnWide()" id="ubahn-wide-btn" class="btn-sm btn-sm-ghost" style="display:flex;align-items:center;gap:6px;" title="Breite umschalten">
+          <i data-lucide="arrow-left-right" style="width:13px;height:13px;"></i>
+        </button>
+<button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-ubahn')">✕ Schließen</button>
+      </div>
+    </div>
+    <div id="ubahn-content" style="flex:1;overflow:auto;"></div>
+  </div>
+</div>
+
+<div id="tour-overlay"></div>
+<div id="tour-spotlight"></div>
+<div id="tour-info">
+  <div id="tour-text"></div>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+    <button id="tour-skip-btn" class="btn-sm btn-sm-ghost" onclick="endTour()">Überspringen</button>
+    <button id="tour-next-btn" class="btn-sm btn-sm-primary" onclick="nextTourStep()">Weiter →</button>
+  </div>
+</div>
+
+<div id="modal-comments" class="modal-overlay" style="display:none;" onclick="closeModal('modal-comments')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width: 400px; border-left: 5px solid #f59e0b;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+      <h3 id="comments-card-title" style="margin:0; font-size:16px; display:flex; align-items:center; gap:8px;">Kommentare</h3>
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-comments')">✕</button>
+    </div>
+    <div id="comments-list" style="max-height: 350px; overflow-y: auto; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px;">
+      </div>
+    <div style="display: flex; gap: 8px; padding-top: 15px; border-top: 1px solid var(--border);">
+      <input type="hidden" id="comments-card-id">
+      <input type="hidden" id="comments-col-id">
+      <input type="text" id="new-comment-input" class="settings-input" placeholder="Schreibe etwas..." style="flex: 1;" onkeydown="if(event.key==='Enter') addComment()">
+      <button class="btn-sm btn-sm-primary" onclick="addComment()">Senden</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-dependencies" class="modal-overlay" style="display:none;" onclick="closeModal('modal-dependencies')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width: 450px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+      <h3 style="margin:0; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="link" style="width:18px;height:18px;"></i> Voraussetzungen
+      </h3>
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-dependencies')">✕</button>
+    </div>
+    
+    <div id="dependencies-list" style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;">
+      </div>
+    
+    <div style="display: flex; gap: 8px; border-top: 1px solid var(--border); padding-top: 15px;">
+      <select id="new-dependency-select" class="settings-input" style="flex:1; margin:0;"></select>
+      <button class="btn-sm btn-sm-primary" onclick="addDependency()">Hinzufügen</button>
+    </div>
+    
+    <input type="hidden" id="dep-card-id">
+    <input type="hidden" id="dep-col-id">
+  </div>
+</div>
+
+<div id="modal-journey" class="modal-overlay" style="display:none;" onclick="closeModal('modal-journey')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width: 500px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">
+      <div>
+        <h3 style="margin:0;">Karten-Historie</h3>
+        <div id="journey-card-title" style="font-size:12px; color:var(--text-muted); margin-top:4px;"></div>
+      </div>
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-journey')">✕</button>
+    </div>
+    <div id="journey-timeline" style="max-height: 450px; overflow-y: auto; padding: 5px;">
+      </div>
+  </div>
+</div>
+  
+<!-- ── PROFIL BEARBEITEN MODAL ─────────────────────── -->
+<div id="modal-profile-edit" class="modal-overlay" style="display:none;" onclick="closeModal('modal-profile-edit')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:400px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+      <h3 style="margin:0;">Profil bearbeiten</h3>
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-profile-edit')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" id="edit-profile-name" class="settings-input" style="width:100%;"/>
+    </div>
+    <div class="form-group" style="margin-top:12px;">
+      <label>Gruppe / Klasse</label>
+      <input type="text" id="edit-profile-group" class="settings-input" style="width:100%;"/>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:18px; justify-content:flex-end;">
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-profile-edit')">Abbrechen</button>
+      <button class="btn-sm btn-sm-primary" onclick="saveProfileEdit()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── BOARD META MODAL ───────────────────────────── -->
+<div id="modal-board-meta" class="modal-overlay" style="display:none;" onclick="closeModal('modal-board-meta')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:420px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+      <h3 style="margin:0;">Board bearbeiten</h3>
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-board-meta')">✕</button>
+    </div>
+    <input type="hidden" id="board-meta-id"/>
+    <div class="form-group">
+      <label>Board-Name</label>
+      <input type="text" id="board-meta-name" class="settings-input" style="width:100%;"/>
+    </div>
+    <div class="form-group" style="margin-top:12px;">
+      <label>Gruppe <span style="color:var(--text-muted); font-size:11px;">(optional)</span></label>
+      <input type="text" id="board-meta-group" class="settings-input" style="width:100%;"/>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:18px; justify-content:flex-end;">
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal('modal-board-meta')">Abbrechen</button>
+      <button class="btn-sm btn-sm-primary" onclick="saveBoardMeta()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── LEHRER: INI-DATEI ERSTELLEN ──────────────────────── -->
+
+<!-- ── CSS FÜR SCHÜLER-LOGIN ──────────────────────────── -->
+<style>
+  .ini-choice-btn {
+    display: block; width: 100%; padding: 12px 16px;
+    background: rgba(var(--accent-rgb, 77,127,255), 0.08);
+    border: 1px solid rgba(var(--accent-rgb, 77,127,255), 0.25);
+    border-radius: 10px; color: var(--text); font-size: 14px;
+    font-weight: 500; cursor: pointer; text-align: left;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .ini-choice-btn:hover {
+    background: rgba(var(--accent-rgb, 77,127,255), 0.18);
+    border-color: rgba(var(--accent-rgb, 77,127,255), 0.5);
+  }
+  #student-auth-screen .auth-box { width: 100%; }
+
+  /* U-Bahn Modal: globale !important überschreiben */
+  #modal-ubahn #modal-ubahn-inner {
+    width: min(92vw, 1100px) !important;
+    max-width: 92vw !important;
+    max-height: 92vh !important;
+    overflow-y: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    transition: width 0.25s ease !important;
+  }
+  #modal-ubahn #modal-ubahn-inner.ubahn-wide {
+    width: calc(100vw - 32px) !important;
+    max-width: calc(100vw - 32px) !important;
+  }
+</style>
+
+<script>
+  (() => {
+    const params = new URLSearchParams(location.search);
+    const role = params.get('role');
+    const studentHost = location.hostname === 'eduban.vercel.app';
+    if (role === 'schueler' || (!role && studentHost)) {
+      sessionStorage.setItem('kf_role', 'schueler');
+      localStorage.setItem('kf_role', 'schueler');
+    } else if (role === 'lehrer' || role === 'tutor') {
+      sessionStorage.setItem('kf_role', 'lehrer');
+      localStorage.removeItem('kf_role');
+      sessionStorage.removeItem('kf_guest_mode');
+      localStorage.removeItem('kf_guest_mode');
+    }
+    if (role && history.replaceState) {
+      history.replaceState(null, '', location.pathname + location.hash);
+    }
+  })();
+
+  if (location.protocol === 'file:') {
+    window.addEventListener('DOMContentLoaded', () => {
+      const ls = document.getElementById('loading-screen');
+      if (ls) {
+        ls.innerHTML = '<div style="color:#ef4444;font-size:14px;padding:24px;max-width:640px;text-align:left;line-height:1.6;"><strong>App kann nicht direkt als Datei gestartet werden.</strong><br><br>Bitte öffne im Projektordner eine der Startdateien oder starte einen lokalen Server.<br><br><code style="background:rgba(0,0,0,0.3);padding:4px 8px;border-radius:4px;display:inline-block;">python3 -m http.server 8080</code><br><br>Danach im Browser öffnen:<br><code style="background:rgba(0,0,0,0.3);padding:4px 8px;border-radius:4px;display:inline-block;">http://localhost:8080/schueler.html</code></div>';
+      }
+    });
+  }
+</script>
+
+<script type="module" src="app.js?v=99"></script>
+<script>
+  // Fehler beim Laden eines Moduls abfangen
+  window.addEventListener('error', (e) => {
+    const ls = document.getElementById('loading-screen');
+    if (ls) ls.innerHTML = '<div style="color:#ef4444;font-size:14px;padding:24px;max-width:600px;text-align:left;"><strong>Startfehler:</strong><br>' + (e.message || e.type) + '<br><br><span style="font-size:12px;opacity:0.7;">Datei: ' + (e.filename||'?') + ' Zeile: ' + (e.lineno||'?') + '</span></div>';
+  });
+  window.addEventListener('unhandledrejection', (e) => {
+    const ls = document.getElementById('loading-screen');
+    if (ls) ls.innerHTML = '<div style="color:#ef4444;font-size:14px;padding:24px;max-width:600px;text-align:left;"><strong>Modul-Ladefehler:</strong><br>' + (e.reason?.message || String(e.reason)) + '</div>';
+  });
+
+  // App starten sobald alle Module geladen sind
+  window.addEventListener('load', () => {
+    if (typeof window.initApp === 'function') {
+      window.initApp();
+    } else {
+      setTimeout(() => {
+        if (typeof window.initApp === 'function') {
+          window.initApp();
+        } else {
+          // Module konnten nicht geladen werden – Fehlermeldung anzeigen
+          const ls = document.getElementById('loading-screen');
+          if (ls) ls.innerHTML = '<div style="color:#ef4444;font-size:14px;padding:24px;max-width:600px;text-align:left;line-height:1.6;"><strong>⚠️ App konnte nicht starten.</strong><br><br>Mögliche Ursachen:<br>• Die App muss über einen lokalen Webserver geöffnet werden (nicht direkt als Datei).<br>• Öffne ein Terminal im App-Ordner und führe aus:<br><code style="background:rgba(0,0,0,0.3);padding:4px 8px;border-radius:4px;display:inline-block;margin-top:8px;">python3 -m http.server 8080</code><br>Dann im Browser: <code style="background:rgba(0,0,0,0.3);padding:4px 8px;border-radius:4px;">http://localhost:8080/app.html</code></div>';
+        }
+      }, 500);
+    }
+  });
+</script>
+
+</body>
+</html>

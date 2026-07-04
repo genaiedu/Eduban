@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDUBAN Projektwerkstatt</title>
+  <meta name="description" content="Umschlagsseite für EDUBAN-Projektseiten: Papierflieger-Boule, Papierhubschrauber und Murmelbahn">
+  <style>
+    @font-face {
+      font-family: "DM Sans";
+      src: url("fonts/dm-sans-v17-latin-regular.woff2") format("woff2");
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "DM Sans";
+      src: url("fonts/dm-sans-v17-latin-600.woff2") format("woff2");
+      font-weight: 600;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "DM Sans";
+      src: url("fonts/dm-sans-v17-latin-700.woff2") format("woff2");
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Outfit";
+      src: url("fonts/outfit-v15-latin-regular.woff2") format("woff2");
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Outfit";
+      src: url("fonts/outfit-v15-latin-700.woff2") format("woff2");
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Outfit";
+      src: url("fonts/outfit-v15-latin-900.woff2") format("woff2");
+      font-weight: 900;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Caveat";
+      src: url("fonts/caveat-v23-latin-regular.woff2") format("woff2");
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    :root {
+      --accent: #4D7FFF;
+      --accent2: #7c3aed;
+      --flieger: #1a6fb5;
+      --hubschrauber: #15803d;
+      --murmelbahn: #ea580c;
+      --text: #172033;
+      --text-muted: #64748b;
+      --surface: rgba(255,255,255,.78);
+      --glass: rgba(255,255,255,.22);
+      --border: rgba(255,255,255,.38);
+      --shadow: 0 18px 55px rgba(15, 23, 42, .16);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(77,127,255,.25), transparent 32%),
+        radial-gradient(circle at 90% 12%, rgba(124,58,237,.18), transparent 34%),
+        radial-gradient(circle at 72% 86%, rgba(234,88,12,.16), transparent 32%),
+        linear-gradient(135deg, #dce9ff 0%, #edf7f0 46%, #ffe3c2 100%);
+      overflow-x: hidden;
+    }
+
+    button, a {
+      font: inherit;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(86px);
+      opacity: .28;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb-1 {
+      width: 520px;
+      height: 520px;
+      background: var(--flieger);
+      top: -180px;
+      left: -160px;
+    }
+
+    .orb-2 {
+      width: 440px;
+      height: 440px;
+      background: var(--hubschrauber);
+      right: -140px;
+      top: 28vh;
+    }
+
+    .orb-3 {
+      width: 360px;
+      height: 360px;
+      background: var(--murmelbahn);
+      bottom: -140px;
+      left: 35vw;
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0;
+      background: linear-gradient(90deg, var(--flieger), var(--hubschrauber), var(--murmelbahn));
+      z-index: 200;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      width: min(1180px, calc(100% - 34px));
+      margin: 0 auto;
+      padding: 34px 0 54px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .brandline {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.76);
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 34px rgba(15,23,42,.14);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .mark img {
+      width: 88%;
+      height: 88%;
+      object-fit: contain;
+    }
+
+    .top-logo {
+      width: 88%;
+      height: 88%;
+      object-fit: contain;
+    }
+
+    .hero-logo {
+      width: 100%;
+      max-height: 170px;
+      object-fit: contain;
+    }
+
+
+    .brand-title {
+      font-family: "Outfit";
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .brand-sub {
+      margin-top: 3px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: .4px;
+      text-transform: uppercase;
+    }
+
+    .pill {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.45);
+      color: var(--text-muted);
+      border-radius: 999px;
+      padding: 10px 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      backdrop-filter: blur(20px);
+      white-space: nowrap;
+    }
+
+    .pill i {
+      width: 16px;
+      height: 16px;
+      color: var(--accent);
+    }
+
+    .hero {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(24px);
+      padding: clamp(26px, 5vw, 54px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero:before {
+      content: "";
+      position: absolute;
+      inset: auto -120px -160px auto;
+      width: 360px;
+      height: 360px;
+      background: radial-gradient(circle, rgba(255,255,255,.54), transparent 62%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+      gap: 28px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .eyebrow i {
+      width: 16px;
+      height: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Outfit";
+      font-size: clamp(38px, 6vw, 68px);
+      line-height: .98;
+      letter-spacing: -.035em;
+    }
+
+    .script {
+      display: block;
+      margin-top: 12px;
+      font-family: "Caveat";
+      font-size: clamp(26px, 4vw, 40px);
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 20px 0 0;
+      color: var(--text-muted);
+      font-size: 16px;
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      text-decoration: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 18px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 13px 30px rgba(77,127,255,.26);
+    }
+
+    .btn-ghost {
+      color: var(--text);
+      background: rgba(255,255,255,.52);
+      border: 1px solid var(--border);
+    }
+
+    .btn i {
+      width: 17px;
+      height: 17px;
+    }
+
+    .logo-card {
+      background: #ffffff;
+      border-radius: 34px;
+      min-height: 226px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 16px 48px rgba(15,23,42,.18);
+      padding: 34px;
+    }
+
+    .logo-card img {
+      width: 100%;
+      max-height: 170px;
+      object-fit: contain;
+    }
+
+    .logo-fallback {
+      font-family: "Outfit";
+      font-size: 44px;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: -.04em;
+    }
+
+    .section {
+      margin-top: 28px;
+    }
+
+    .section-title {
+      font-family: "Outfit";
+      font-size: 24px;
+      font-weight: 900;
+      margin: 0 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title i {
+      width: 23px;
+      height: 23px;
+      color: var(--accent);
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .project-card {
+      position: relative;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(24px);
+      overflow: hidden;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 24px 64px rgba(15,23,42,.2);
+    }
+
+    .project-head {
+      min-height: 128px;
+      padding: 20px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-head:before {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.18);
+      right: -90px;
+      top: -90px;
+    }
+
+    .project-head i {
+      position: relative;
+      z-index: 1;
+      width: 34px;
+      height: 34px;
+      margin-bottom: 18px;
+    }
+
+    .project-kicker {
+      position: relative;
+      z-index: 1;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 900;
+      opacity: .9;
+    }
+
+    .project-title {
+      position: relative;
+      z-index: 1;
+      margin: 5px 0 0;
+      font-family: "Outfit";
+      font-size: 26px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .flieger .project-head {
+      background: linear-gradient(135deg, #1a6fb5, #7c3aed);
+    }
+
+    .hubschrauber .project-head {
+      background: linear-gradient(135deg, #15803d, #65a30d);
+    }
+
+    .murmelbahn .project-head {
+      background: linear-gradient(135deg, #ea580c, #f59e0b);
+    }
+
+    .project-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .project-body p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .fact {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.38);
+      color: var(--text-muted);
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .fact i {
+      width: 13px;
+      height: 13px;
+    }
+
+    .open-row {
+      margin-top: auto;
+      padding-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .flieger .open-row { color: var(--flieger); }
+    .hubschrauber .open-row { color: var(--hubschrauber); }
+    .murmelbahn .open-row { color: var(--murmelbahn); }
+
+    .open-row i {
+      width: 18px;
+      height: 18px;
+      transition: transform .2s ease;
+    }
+
+    .project-card:hover .open-row i {
+      transform: translateX(3px);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .info-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(24px);
+      padding: 22px;
+    }
+
+    .info-card h2 {
+      margin: 0 0 10px;
+      font-family: "Outfit";
+      font-size: 22px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-card h2 i {
+      width: 22px;
+      height: 22px;
+      color: var(--accent);
+    }
+
+    .info-card p {
+      margin: 0 0 10px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .info-card ul {
+      margin: 12px 0 0 18px;
+      padding: 0;
+      color: var(--text-muted);
+      line-height: 1.75;
+      font-size: 14px;
+    }
+
+    .help-info {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(77,127,255,0.08);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+    }
+
+    .help-info-title {
+      color: var(--accent);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+
+    .help-tip {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(245,158,11,0.1);
+      border-left: 3px solid #f59e0b;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .help-tip-title {
+      color: #f59e0b;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+
+    .toc {
+      background: rgba(77,127,255,0.04);
+      border: 1px solid rgba(77,127,255,0.15);
+      border-radius: 18px;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .toc-link {
+      display: flex;
+      align-items: flex-start;
+      text-decoration: none;
+      color: var(--text-muted);
+      padding: 8px 10px;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      line-height: 1.4;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .toc-link svg {
+      margin-top: 2px;
+      margin-right: 6px;
+      flex-shrink: 0;
+      opacity: 0.5;
+      transition: all 0.2s ease;
+    }
+
+    .toc-link:hover {
+      background: rgba(77,127,255,0.08);
+      color: var(--accent);
+    }
+
+    .toc-link:hover svg {
+      opacity: 1;
+      transform: translateX(2px);
+    }
+
+    .back-to-top {
+      position: sticky;
+      bottom: 24px;
+      float: right;
+      width: 44px;
+      height: 44px;
+      background: var(--accent, #4D7FFF);
+      color: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+      z-index: 50;
+      margin-top: -20px;
+      text-decoration: none;
+    }
+
+    .back-to-top:hover {
+      transform: translateY(-3px);
+    }
+
+    .footer {
+      margin-top: 34px;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.65;
+      border-top: 1px solid rgba(255,255,255,.45);
+      padding-top: 18px;
+    }
+
+    .footer details {
+      max-width: 840px;
+    }
+
+    .footer summary {
+      cursor: pointer;
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+
+    .footer summary:hover {
+      color: var(--accent);
+    }
+
+    .footer h2 {
+      font-family: "Outfit";
+      font-size: 16px;
+      color: var(--text);
+      margin: 14px 0 8px;
+    }
+
+    .footer h3 {
+      font-size: 13px;
+      color: var(--text);
+      margin: 12px 0 4px;
+    }
+
+    .footer p {
+      margin: 0 0 8px;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .project-grid,
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .logo-card {
+        min-height: 190px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 24px, 1180px);
+        padding-top: 20px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero {
+        border-radius: 24px;
+      }
+
+      .toc {
+        grid-template-columns: 1fr;
+      }
+
+      .project-card {
+        min-height: unset;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="progress-bar" id="progressBar"></div>
+
+  <main class="page" id="top">
+    <div class="topbar">
+      <div class="brandline">
+        <div class="mark">
+          <img class="top-logo" src="images/logo-512.png" alt="EDUBAN" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=&quot;font-family:Outfit;font-weight:900;color:#4D7FFF;&quot;>E</span>';">
+        </div>
+        <div>
+          <div class="brand-title">EDUBAN Projektwerkstatt</div>
+          <div class="brand-sub">Agiles Projektmanagement im Unterricht</div>
+        </div>
+      </div>
+      <div class="pill">
+        <i data-lucide="folder-kanban"></i>
+        Drei Projektstufen
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">
+            <i data-lucide="sparkles"></i>
+            Projektseiten für selbst erzeugte Kanban-Boards
+          </div>
+          <h1>
+            EDUBAN ausprobieren
+            <span class="script">kleine Experimente, echte Projektsteuerung</span>
+          </h1>
+          <p class="lead">
+            Diese Umschlagsseite führt zu drei kurzen Unterrichtsprojekten, mit denen Schülerinnen und Schüler EDUBAN praktisch testen können. Sinnvoll ist eine gestufte Nutzung: Papierflieger-Boule dient als erster Einstieg mit vorgegebenen Karten. Danach erzeugen die Gruppen bei Papierhubschrauber und Murmelbahn ihr Kanban-Board selbst.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#projekte">
+              <i data-lucide="rocket"></i>
+              Projekte öffnen
+            </a>
+            <a class="btn btn-ghost" href="https://eduban.vercel.app/schueler.html" target="_blank" rel="noopener noreferrer">
+              <i data-lucide="external-link"></i>
+              EDUBAN öffnen
+            </a>
+            <a class="btn btn-ghost" href="nutzerhandbuch.html" target="_blank" rel="noopener noreferrer">
+              <i data-lucide="book-open"></i>
+              Nutzerhandbuch
+            </a>
+            <a class="btn btn-ghost" href="#eduban">
+              <i data-lucide="info"></i>
+              Warum EDUBAN?
+            </a>
+          </div>
+        </div>
+        <div class="logo-card">
+          <img class="hero-logo" src="images/logo.png" alt="EDUBAN Logo" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=&quot;logo-fallback&quot;>EDUBAN</div>';">
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="toc-top">
+      <div class="toc">
+        <a href="#projekte" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i>Projektseiten</a>
+        <a href="https://eduban.vercel.app/schueler.html" target="_blank" rel="noopener noreferrer" class="toc-link"><i data-lucide="external-link" style="width:14px;height:14px;"></i>EDUBAN öffnen</a>
+        <a href="nutzerhandbuch.html" target="_blank" rel="noopener noreferrer" class="toc-link"><i data-lucide="book-open" style="width:14px;height:14px;"></i>Nutzerhandbuch</a>
+        <a href="#eduban" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i>Was EDUBAN sichtbar macht</a>
+        <a href="#kanban" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i>Warum nicht alle Musterkarten?</a>
+        <a href="#einsatz" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i>Einsatz im Unterricht</a>
+      </div>
+    </section>
+
+    <section class="section" id="projekte">
+      <h2 class="section-title">
+        <i data-lucide="layout-dashboard"></i>
+        Projektseiten
+      </h2>
+
+      <div class="help-info" style="margin-bottom:18px;">
+        <div class="help-info-title">Empfohlene Reihenfolge</div>
+        <p style="margin-top:4px; margin-bottom:0;">
+          Beginne mit <strong style="color:var(--text);">Papierflieger-Boule</strong>, weil dort das Board bereits vorstrukturiert ist. Danach können die Gruppen bei <strong style="color:var(--text);">Papierhubschrauber</strong> oder <strong style="color:var(--text);">Murmelbahn</strong> selbst ein Board erzeugen und zeigen, ob sie die Kanban-Logik verstanden haben.
+          EDUBAN selbst öffnet sich über <a href="https://eduban.vercel.app/schueler.html" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:800;">diesen Link</a> in einem neuen Browser-Tab. Das <a href="nutzerhandbuch.html" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:800;">Nutzerhandbuch</a> öffnet sich ebenfalls in einem neuen Tab.
+        </p>
+      </div>
+
+      <div class="project-grid">
+        <a class="project-card flieger" href="Flieger.html" target="_blank" rel="noopener noreferrer">
+          <div class="project-head">
+            <i data-lucide="plane"></i>
+            <div class="project-kicker">1. Einstieg · Vorgegebenes Board</div>
+            <div class="project-title">Papierflieger-Boule</div>
+          </div>
+          <div class="project-body">
+            <p>
+              Ein Papierflieger soll lange in der Luft bleiben und möglichst nahe an einem Zielpunkt landen. Dieses Projekt eignet sich als erster Durchlauf, weil die Kanban-Karten bereits vorgegeben sind und die Gruppen EDUBAN zunächst als Arbeitsumgebung kennenlernen.
+            </p>
+            <div class="facts">
+              <span class="fact"><i data-lucide="timer"></i>Flugzeit</span>
+              <span class="fact"><i data-lucide="target"></i>Zielpunkt</span>
+              <span class="fact"><i data-lucide="kanban"></i>Karten vorgegeben</span>
+            </div>
+            <div class="open-row">
+              <span>Flieger.html öffnen</span>
+              <i data-lucide="arrow-right"></i>
+            </div>
+          </div>
+        </a>
+
+        <a class="project-card hubschrauber" href="papierhubschrauber.html" target="_blank" rel="noopener noreferrer">
+          <div class="project-head">
+            <i data-lucide="wind"></i>
+            <div class="project-kicker">2. Transfer · Eigenes Board</div>
+            <div class="project-title">Papierhubschrauber</div>
+          </div>
+          <div class="project-body">
+            <p>
+              Ein Papierhubschrauber soll aus gleicher Höhe möglichst langsam und stabil fallen. Hier erzeugen die Gruppen ihr EDUBAN-Board selbst und übertragen die zuvor erlebte Kanban-Struktur auf ein neues Projekt.
+            </p>
+            <div class="facts">
+              <span class="fact"><i data-lucide="timer"></i>Fallzeit</span>
+              <span class="fact"><i data-lucide="rotate-cw"></i>Stabilität</span>
+              <span class="fact"><i data-lucide="repeat"></i>Optimierung</span>
+            </div>
+            <div class="open-row">
+              <span>papierhubschrauber.html öffnen</span>
+              <i data-lucide="arrow-right"></i>
+            </div>
+          </div>
+        </a>
+
+        <a class="project-card murmelbahn" href="murmelbahn.html" target="_blank" rel="noopener noreferrer">
+          <div class="project-head">
+            <i data-lucide="route"></i>
+            <div class="project-kicker">3. Vertiefung · Eigenes Board</div>
+            <div class="project-title">Murmelbahn</div>
+          </div>
+          <div class="project-body">
+            <p>
+              Eine Murmel startet aus vorgegebener Höhe und soll möglichst lange bis zum Ziel unterwegs sein. Dieses Projekt eignet sich als anspruchsvollerer zweiter Transfer, weil Bau, Messung und Optimierung stärker voneinander abhängen.
+            </p>
+            <div class="facts">
+              <span class="fact"><i data-lucide="ruler"></i>25 cm Höhe</span>
+              <span class="fact"><i data-lucide="timer"></i>Laufzeit</span>
+              <span class="fact"><i data-lucide="gauge"></i>Reibung</span>
+            </div>
+            <div class="open-row">
+              <span>murmelbahn.html öffnen</span>
+              <i data-lucide="arrow-right"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" id="eduban">
+      <h2 class="section-title">
+        <i data-lucide="kanban"></i>
+        Was EDUBAN sichtbar macht
+      </h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <h2><i data-lucide="eye"></i>Vom Basteln zum Projekt</h2>
+          <p>
+            Ohne Kanban wirken solche Aufgaben oft wie reine Bau- oder Bastelphasen. EDUBAN macht sichtbar, dass dahinter ein echter Projektprozess steckt: Planung, Rollenklärung, Materialentscheidung, Test, Messung, Überarbeitung und Auswertung.
+          </p>
+          <p>
+            Gerade kurze Experimente eignen sich gut, weil die Schülerinnen und Schüler den Nutzen eines Boards sofort erleben. Wenn eine Gruppe zu viele Dinge gleichzeitig beginnt, wenn Messwerte fehlen oder wenn niemand für die Dokumentation zuständig ist, wird das im Board schnell erkennbar.
+          </p>
+          <div class="help-info">
+            <div class="help-info-title">Didaktischer Kern</div>
+            <p style="margin-top:4px; margin-bottom:0;">
+              EDUBAN verschiebt den Fokus von „Wir bauen etwas“ zu „Wir steuern einen Arbeitsprozess“. Das ist der eigentliche Mehrwert für projektorientierten Unterricht.
+            </p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h2><i data-lucide="workflow"></i>Arbeitsfluss statt Aufgabenliste</h2>
+          <p>
+            Ein gutes Kanban-Board ist keine Sammlung hübscher To-dos. Es zeigt einen Fluss: Was ist offen? Was ist gerade in Arbeit? Was ist fertig? Was blockiert eine andere Aufgabe? Wer wartet auf wen?
+          </p>
+          <p>
+            Mit WIP-Limits lernen Gruppen, nicht alles gleichzeitig anzufangen. Mit Abhängigkeiten erkennen sie, dass manche Aufgaben erst nach Vorarbeiten sinnvoll sind. Mit Meilensteinen wird klar, wann eine Projektphase wirklich abgeschlossen ist.
+          </p>
+          <ul>
+            <li>Karten beschreiben konkrete Arbeitsschritte.</li>
+            <li>Spalten zeigen den Arbeitszustand.</li>
+            <li>Abhängigkeiten zeigen fachliche und organisatorische Reihenfolgen.</li>
+            <li>Kommentare dokumentieren Entscheidungen und Rückmeldungen.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="kanban">
+      <h2 class="section-title">
+        <i data-lucide="lightbulb"></i>
+        Warum nicht alle Seiten fertige Karten vorgeben
+      </h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <h2><i data-lucide="pencil-ruler"></i>Die Board-Erstellung ist Teil der Aufgabe</h2>
+          <p>
+            Papierflieger-Boule kann als erster, geführter Durchlauf mit vorgegebenen Karten genutzt werden. Das ist didaktisch sinnvoll, weil die Schülerinnen und Schüler EDUBAN zunächst ohne zusätzliche Planungsunsicherheit kennenlernen. Danach sollen sie bei Papierhubschrauber und Murmelbahn selbst herausfinden, welche Aufgaben für ihr Projekt nötig sind.
+          </p>
+          <p>
+            Das ist besonders wertvoll, weil schlechte Karten sofort auffallen: zu große Aufgaben, unklare Verantwortlichkeiten, fehlende Messung oder Aufgaben ohne sichtbares Ergebnis. Genau daran kann man über Projektmanagement sprechen.
+          </p>
+          <div class="help-tip">
+            <div class="help-tip-title">Wichtig</div>
+            <p style="margin-top:4px; margin-bottom:0;">
+              Nach dem Einstieg geben die Webseiten nur noch den fachlichen Rahmen. Das EDUBAN-Board ist dann selbst ein Produkt der Planung der Gruppe.
+            </p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h2><i data-lucide="list-checks"></i>Gute Karten entstehen aus echten Problemen</h2>
+          <p>
+            Eine Gruppe merkt beim Arbeiten, dass sie Material besorgen, Messregeln klären, Testläufe dokumentieren oder eine Variante auswählen muss. Aus diesen echten Problemen entstehen die besten Karten.
+          </p>
+          <p>
+            Ein gutes Board für diese Projekte sollte daher nicht zu allgemein sein. „Murmelbahn bauen“ ist als einzelne Karte zu groß. Besser sind konkrete Aufgaben wie „Startpunkt auf 25 cm einrichten“, „erste Kurve testen“ oder „drei Laufzeiten messen“.
+          </p>
+          <ul>
+            <li>Jede Karte sollte ein überprüfbares Ergebnis haben.</li>
+            <li>Karten sollten nicht nur Tätigkeiten, sondern Entscheidungen sichtbar machen.</li>
+            <li>Messung und Dokumentation brauchen eigene Aufmerksamkeit.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="einsatz">
+      <h2 class="section-title">
+        <i data-lucide="graduation-cap"></i>
+        Einsatz im Unterricht
+      </h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <h2><i data-lucide="clock"></i>Vorschlag für eine Doppelstunde</h2>
+          <p>
+            Die Projektseiten sind für kurze, klar begrenzte Unterrichtssequenzen gedacht. Eine sinnvolle Reihenfolge ist: zuerst Papierflieger-Boule als geführter Einstieg mit vorgegebenem Board, danach Papierhubschrauber oder Murmelbahn als Transferprojekt mit selbst erzeugtem Board.
+          </p>
+          <ul>
+            <li>10 Minuten: Auftrag und Wertung klären</li>
+            <li>beim Einstieg: vorgegebenes Board gemeinsam sichten</li>
+            <li>beim Transfer: eigenes EDUBAN-Board erstellen</li>
+            <li>25 Minuten: Bau und erste Tests</li>
+            <li>20 Minuten: Optimierung und Messung</li>
+            <li>15 Minuten: Wettbewerb, Auswertung und Reflexion</li>
+          </ul>
+        </div>
+
+        <div class="info-card">
+          <h2><i data-lucide="users"></i>Rollen in Dreiergruppen</h2>
+          <p>
+            Dreiergruppen sind klein genug, damit niemand unsichtbar bleibt, aber groß genug, um echte Koordination notwendig zu machen. Die Rollen sollten nicht starr sein, sondern als Startverantwortung dienen.
+          </p>
+          <ul>
+            <li>Eine Person achtet auf Boardpflege und WIP-Limit.</li>
+            <li>Eine Person achtet auf Bau, Material und Tests.</li>
+            <li>Eine Person achtet auf Messdaten, Ergebnis und Reflexion.</li>
+          </ul>
+          <div class="help-info">
+            <div class="help-info-title">Beobachtungspunkt</div>
+            <p style="margin-top:4px; margin-bottom:0;">
+              Interessant ist nicht nur, welches Produkt gewinnt, sondern ob die Gruppe ihren Arbeitsprozess nachvollziehbar organisiert hat.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <details>
+        <summary>Impressum</summary>
+        <h2>Impressum</h2>
+        <h3>Angaben gemäß § 5 DDG</h3>
+        <p>
+          <strong>Verantwortlich für den Inhalt</strong><br>
+          Dr. Claus Unterberg<br>
+          Gymnasium Thomaeum Kempen<br>
+          Am Gymnasium 4<br>
+          47906 Kempen
+        </p>
+        <h3>Kontakt</h3>
+        <p>
+          E-Mail:
+          <a href="mailto:claus.unterberg@thomaeum.de">claus.unterberg@thomaeum.de</a>
+        </p>
+        <h3>Verantwortlich im Sinne des § 18 Abs. 2 MStV</h3>
+        <p>Dr. Claus Unterberg, Anschrift wie oben.</p>
+        <h3>Urheberrecht</h3>
+        <p>Die auf dieser Seite veröffentlichten Texte und Grafiken sind urheberrechtlich geschützt. Eine Nutzung im schulischen Kontext ist ausdrücklich erwünscht. Eine darüber hinausgehende Verwendung bedarf der vorherigen Zustimmung.</p>
+      </details>
+    </footer>
+
+    <a href="#top" class="back-to-top" title="Zum Seitenanfang">
+      <i data-lucide="arrow-up" style="width:24px;height:24px;"></i>
+    </a>
+    <div style="clear:both;"></div>
+  </main>
+
+  <script src="fonts/lucide.min.js"></script>
+  <script>
+    "use strict";
+
+    function refreshIcons() {
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    window.addEventListener("scroll", function() {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      var bar = document.getElementById("progressBar");
+      if (bar) bar.style.width = (h > 0 ? window.scrollY / h * 100 : 0) + "%";
+    });
+
+    refreshIcons();
+  </script>
+</body>
+</html>

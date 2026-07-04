@@ -1,0 +1,692 @@
+<style>
+  .back-to-top {
+    position: sticky;
+    bottom: 24px;
+    float: right;
+    width: 44px;
+    height: 44px;
+    background: var(--accent, #4D7FFF);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+    z-index: 50;
+    margin-top: -20px;
+  }
+  .back-to-top:hover { transform: translateY(-3px); }
+
+  .help-tip {
+    margin-top:12px; padding:10px 14px; background:rgba(245,158,11,0.1); border-left:3px solid #f59e0b; border-radius:0 6px 6px 0;
+  }
+  .help-tip-title {
+    color:#f59e0b; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; font-weight:700;
+  }
+  .help-info {
+    margin-top:12px; padding:10px 14px; background:rgba(77,127,255,0.08); border-left:3px solid var(--accent); border-radius:0 6px 6px 0;
+  }
+  .help-info-title {
+    color:var(--accent); font-size:12px; text-transform:uppercase; letter-spacing:0.5px; font-weight:700;
+  }
+
+  .toc-link {
+    display: flex;
+    align-items: flex-start;
+    text-decoration: none;
+    color: var(--text-muted);
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    line-height: 1.4;
+  }
+  .toc-link svg {
+    margin-top: 2px;
+    margin-right: 6px;
+    flex-shrink: 0;
+    opacity: 0.5;
+    transition: all 0.2s ease;
+  }
+  .toc-link:hover {
+    background: rgba(77,127,255,0.08);
+    color: var(--accent);
+  }
+  .toc-link:hover svg {
+    opacity: 1;
+    transform: translateX(2px);
+  }
+</style>
+
+<div style="display:flex; flex-direction:column; align-items:center; gap:18px; margin-bottom:30px;">
+  <div style="background:#ffffff; border-radius:34px; width:min(88%, 420px); height:210px; display:flex; align-items:center; justify-content:center; box-shadow: 0 14px 44px rgba(0,0,0,0.24); flex-shrink:0; padding:32px;">
+    <img src="images/logo.png" style="width:100%; height:100%; object-fit:contain;" alt="EDUBAN" onerror="this.style.display='none';"/>
+  </div>
+  <div style="text-align:center;">
+    <div class="modal-title" style="margin-bottom:4px;">Nutzerhandbuch</div>
+    <div style="font-size:13px; color:var(--text-muted);">EDUBAN Standalone – Kurzanleitung</div>
+  </div>
+</div>
+
+<div id="manual-content-wrapper" style="font-size:13px; line-height:1.8; color:var(--text-muted);">
+
+ <div id="toc-top" class="help-section" style="background:rgba(77,127,255,0.04); border:1px solid rgba(77,127,255,0.15); border-radius:12px; padding:20px; scroll-margin-top: 20px; margin-bottom: 32px;">
+
+    <div style="display:flex; flex-wrap:wrap; gap:24px;">
+
+      <div style="flex:1; min-width:240px;">
+        <div style="display:flex; align-items:center; gap:8px; color:var(--accent); font-weight:600; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(77,127,255,0.15);">
+          <i data-lucide="users" style="width:16px;height:16px;"></i>
+          Für alle Nutzer
+        </div>
+        <div style="display:flex; flex-direction:column; gap:2px;">
+          <a href="#ch-was-ist-kanban" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Was ist ein Kanban-Board?</a>
+          <a href="#ch-wie-funktioniert" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Wie die App funktioniert</a>
+          <a href="#ch-anmeldung-tutor" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Anmeldung als Tutor</a>
+          <a href="#ch-anmeldung-schueler" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Anmeldung als Schülerin oder Schüler</a>
+          <a href="#ch-boards-erstellen" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Boards erstellen und duplizieren</a>
+          <a href="#ch-spalten" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Spalten verwalten</a>
+          <a href="#ch-karten" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Karten erstellen und bearbeiten</a>
+          <a href="#ch-ideen" class="toc-link"><i data-lucide="lightbulb" style="width:14px;height:14px;"></i> Ideenbox</a>
+          <a href="#ch-meilensteine" class="toc-link"><i data-lucide="flag" style="width:14px;height:14px;"></i> Meilensteine &amp; Projektphasen</a>
+          <a href="#ch-kommentare" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Kommentare und Feedback</a>
+          <a href="#ch-abhaengigkeiten" class="toc-link"><i data-lucide="link" style="width:14px;height:14px;"></i> Voraussetzungen &amp; Abhängigkeiten</a>
+          <a href="#ch-dragdrop" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Karten verschieben</a>
+          <a href="#ch-gruppieren" class="toc-link"><i data-lucide="link-2" style="width:14px;height:14px;"></i> Karten verketten (Gruppen)</a>
+          <a href="#ch-loeschen" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Karten löschen</a>
+          <a href="#ch-hintergrund" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Hintergrund anpassen</a>
+          <a href="#ch-termine" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Termine und Fristen</a>
+          <a href="#ch-ubahn" class="toc-link"><i data-lucide="train-front" style="width:14px;height:14px;"></i> U-Bahn-Ansicht (Projektablauf)</a>
+          <a href="#ch-timeline" class="toc-link"><i data-lucide="bar-chart-2" style="width:14px;height:14px;"></i> Projekt-Timeline (Gantt)</a>
+          <a href="#ch-netzplan" class="toc-link"><i data-lucide="workflow" style="width:14px;height:14px;"></i> Netzplan (kritischer Pfad &amp; Puffer)</a>
+          <a href="#ch-export-import" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Exportieren, Image und KI Import</a>
+          <a href="#ch-pwa" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> App installieren</a>
+          <a href="#ch-versionen" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Die zwei App-Versionen</a>
+        </div>
+      </div>
+
+      <div style="flex:1; min-width:240px;">
+        <div style="display:flex; align-items:center; gap:8px; color:var(--accent); font-weight:600; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid rgba(77,127,255,0.15);">
+          <i data-lucide="graduation-cap" style="width:16px;height:16px;"></i>
+          Für Tutoren
+        </div>
+        <div style="display:flex; flex-direction:column; gap:2px;">
+          <a href="#ch-ini-erstellen" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Tutor-Schlüssel erstellen (passwortfrei)</a>
+          <a href="#ch-image-oeffnen" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Image einer Schülerin oder eines Schülers öffnen</a>
+          <a href="#ch-tutor-deadline-aging" class="toc-link"><i data-lucide="calendar-clock" style="width:14px;height:14px;"></i> Deadline &amp; Aging steuern</a>
+          <a href="#ch-benotung" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Benotung (Prozess &amp; Ergebnis)</a>
+          <a href="#ch-noten-export" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Noten exportieren &amp; Gutachten</a>
+          <a href="#ch-noten-sicherung" class="toc-link"><i data-lucide="shield-check" style="width:14px;height:14px;"></i> Noten sichern &amp; wiederherstellen</a>
+          <a href="#ch-rueckgabe" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Image zurückgeben</a>
+          <a href="#ch-hintergrundbilder" class="toc-link"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i> Hintergrundbilder verwalten</a>
+          <a href="#ch-datenschutz" class="toc-link" style="margin-top:12px;"><i data-lucide="lock" style="width:14px;height:14px;"></i> Datenschutz, Sicherung &amp; Verschlüsselung</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  
+  <!-- WAS IST KANBAN -->
+  <div id="ch-was-ist-kanban" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="trello" style="width:24px;height:24px;"></i> Was ist ein Kanban-Board?</span></div>
+    <p>Kanban ist eine Methode zur Visualisierung und Steuerung von Arbeit. Der Begriff stammt aus dem Japanischen und bedeutet so viel wie <strong style="color:var(--text);">„Signalkarte"</strong>. Entwickelt wurde die Methode ursprünglich von Toyota in den 1950er Jahren – heute wird sie weltweit in Schulen, Unternehmen und von Einzelpersonen eingesetzt.</p>
+    <p style="margin-top:10px;">Die Grundidee: Aufgaben werden als <strong style="color:var(--text);">Karten</strong> dargestellt und auf einem Board in <strong style="color:var(--text);">Spalten</strong> angeordnet, die den aktuellen Status zeigen:</p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li><strong style="color:var(--text);">— Offen</strong> – Aufgaben, die noch nicht begonnen wurden</li>
+      <li><strong style="color:var(--text);">— In Bearbeitung</strong> – Aufgaben, an denen gerade gearbeitet wird</li>
+      <li><strong style="color:var(--text);">— Fertig</strong> – Abgeschlossene Aufgaben</li>
+    </ul>
+    <p style="margin-top:10px;">Ein zentrales Prinzip ist das <strong style="color:var(--text);">WIP-Limit</strong> (Work in Progress). Es legt fest, wie viele Aufgaben gleichzeitig „In Bearbeitung" sein dürfen. Das klingt nach Einschränkung – ist aber ein wichtiges Werkzeug: Wer zu viele Dinge gleichzeitig beginnt, erledigt am Ende weniger. Das WIP-Limit zwingt dazu, angefangene Aufgaben zu Ende zu bringen, bevor neue begonnen werden.</p>
+    <div class="help-info">
+      <div class="help-info-title">Warum Kanban in der Schule?</div>
+      <p style="margin-top:4px; margin-bottom:0;">Ein Kanban-Board macht den Arbeitsfluss für alle Beteiligten <strong style="color:var(--text);">auf einen Blick sichtbar</strong>: Wo stockt es? Was ist erledigt? Wer arbeitet woran? Diese Transparenz ist besonders wertvoll bei Gruppenarbeiten und Projekten, bei denen mehrere Personen über einen längeren Zeitraum zusammenarbeiten.</p>
+    </div>
+  </div>
+
+  <!-- WIE FUNKTIONIERT DIE APP -->
+  <div id="ch-wie-funktioniert" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="info" style="width:24px;height:24px;"></i> Wie die App funktioniert</span></div>
+    <p>EDUBAN Standalone funktioniert grundsätzlich <strong style="color:var(--text);">lokal und ohne eigenes EDUBAN-Konto</strong>. Alle Daten bleiben zunächst auf dem jeweiligen Gerät. Der Austausch zwischen Tutor und Schülern läuft entweder über manuell weitergegebene Dateien oder optional über die Datenbank-Funktion. Schüler-Images und Rückgaben werden verschlüsselt gespeichert; offene Vorlagen sind nur für bewusst freigegebene Startboards gedacht:</p>
+    <ul style="margin:10px 0 0 18px; display:flex; flex-direction:column; gap:8px;">
+      <li>
+        <strong style="color:var(--text);">Schlüsseldateien statt Passwörter</strong> – EDUBAN arbeitet komplett passwortfrei: Die Datei ist der Schlüssel. Der Tutor besitzt einen <strong style="color:var(--text);">privaten Tutor-Schlüssel</strong> („…SCHLUESSEL-privat.ini", bleibt beim Tutor) und verteilt die <strong style="color:var(--text);">Verteil-INI</strong> („…fuer-schueler.ini") an die Klasse (z.&nbsp;B. per E-Mail, Messenger oder USB-Stick). Jede Schülerin und jeder Schüler erstellt daraus bei der Registrierung die persönliche <strong style="color:var(--text);">Schüler-INI</strong> – sie ist der eigene Anmelde-Schlüssel auf jedem Gerät.
+      </li>
+      <li>
+        <strong style="color:var(--text);">Image</strong> – So heißt die exportierte Board-Datei einer Schülerin oder eines Schülers. Schülerinnen und Schüler exportieren ihr Image und geben es an den Tutor weiter. Der Tutor öffnet es, gibt Feedback, benotet – und gibt das Image zurück. Die Schülerin oder der Schüler öffnet das zurückgegebene Image automatisch mit der eigenen Schüler-INI – ganz ohne Passwort.
+      </li>
+      <li>
+        <strong style="color:var(--text);">Datenbank-Speicherung</strong> – Schülerinnen und Schüler können ihr verschlüsseltes Image privat in der Datenbank speichern und wieder laden. Tutoren sehen nur Images, die ausdrücklich über „An den Tutor weiterleiten“ abgegeben wurden, und können Rückgaben ebenfalls verschlüsselt dort ablegen. Firebase verwendet dafür eine automatische anonyme Anmeldung; es wird kein sichtbares Firebase-Konto benötigt.
+      </li>
+      <li>
+        <strong style="color:var(--text);">Board-Vorlagen</strong> – Tutoren können vorbereitete Startboards als offene Vorlage exportieren oder in der Datenbank bereitstellen. Schülerinnen und Schüler mit der passenden INI können diese Vorlage laden, als eigenes Board bearbeiten und später wieder normal verschlüsselt sichern oder abgeben.
+      </li>
+      <li>
+        <strong style="color:var(--text);">Noten-Sicherung</strong> – Eine separate, verschlüsselte Datei nur für Tutoren. Sie speichert Prozessnoten, Aufwandswerte, Bewertungskommentare und Ergebnisnoten getrennt vom Schüler-Image.
+      </li>
+    </ul>
+    <div class="help-info">
+      <div class="help-info-title">Verschlüsselung</div>
+      <p style="margin-top:4px; margin-bottom:0;">Jedes Image ist verschlüsselt. Nur der Tutor (mit seinem privaten Tutor-Schlüssel) und die Schülerin oder der Schüler (mit der persönlichen Schüler-INI) können es öffnen. Kein Dritter kann die Inhalte lesen – auch wenn die Datei auf dem falschen Weg landet.</p>
+    </div>
+    <div class="help-tip">
+      <div class="help-tip-title">Bewertungen bleiben Tutor-Daten</div>
+      <p style="margin-top:4px; margin-bottom:0;">Noten werden nicht an Schülerinnen und Schüler zurückgegeben. Der Tutor sichert sie separat über <strong style="color:var(--text);">„Noten sichern"</strong> und kann sie später mit <strong style="color:var(--text);">„Noten wiederherstellen"</strong> erneut einspielen.</p>
+    </div>
+  </div>
+
+  <!-- ANMELDUNG TUTOR -->
+  <div id="ch-anmeldung-tutor" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="log-in" style="width:24px;height:24px;"></i> Anmeldung als Tutor</span></div>
+    <p>Beim ersten Öffnen der App gibst du deinen <strong style="color:var(--text);">Namen</strong> ein. Danach erstellst du einmalig deine <strong style="color:var(--text);">Schlüsseldateien</strong> (siehe Abschnitt <a href="#ch-ini-erstellen" style="color:var(--accent);">Tutor-Schlüssel erstellen</a>) – ganz ohne Masterpasswort. Der private Tutor-Schlüssel bleibt danach auf dem Gerät geladen: Speichern, Öffnen von Abgaben und Noten-Sicherung laufen komplett passwortfrei.</p>
+    <p style="margin-top:8px;">Auf einem neuen Gerät lädst du einfach deinen privaten Tutor-Schlüssel („INI laden" in der Seitenleiste) – mehr ist nicht nötig.</p>
+    <div class="help-tip">
+      <div class="help-tip-title">Beim nächsten Mal</div>
+      <p style="margin-top:4px; margin-bottom:0;">Wenn du die App erneut öffnest, landest du direkt in der App – Name und Tutor-Schlüssel sind gespeichert. Mit „Abmelden" in der Seitenleiste werden die lokalen Daten (inklusive Schlüssel) vom Gerät entfernt.</p>
+    </div>
+  </div>
+
+  <!-- ANMELDUNG SCHÜLER -->
+  <div id="ch-anmeldung-schueler" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="user-check" style="width:24px;height:24px;"></i> Anmeldung als Schülerin oder Schüler</span></div>
+    <p>Die Anmeldung funktioniert <strong style="color:var(--text);">ohne Passwort</strong> – deine persönliche <strong style="color:var(--text);">Schüler-INI-Datei</strong> ist dein Schlüssel.</p>
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Einmalige Registrierung:</strong></p>
+    <ol style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:6px;">
+      <li><strong style="color:var(--text);">Verteil-INI des Tutors laden</strong> – die Datei „…fuer-schueler.ini", die du von deinem Tutor bekommen hast.</li>
+      <li><strong style="color:var(--text);">Namen eingeben</strong> – Vor- und Nachname oder Nickname.</li>
+      <li><strong style="color:var(--text);">Schüler-INI speichern</strong> – Die App erstellt automatisch deine persönliche Schüler-INI und speichert sie (auf dem iPad im Ordner „Downloads" der Dateien-App). <strong style="color:var(--danger);">Bewahre diese Datei gut auf</strong> – sie ist dein einziger Schlüssel!</li>
+    </ol>
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Anmelden:</strong> Auf demselben Gerät bleibst du automatisch angemeldet. Auf jedem anderen Gerät (oder nach dem Abmelden) wählst du einfach deine Schüler-INI aus – fertig.</p>
+    <div class="help-tip">
+      <div class="help-tip-title">Schüler-INI verloren?</div>
+      <p style="margin-top:4px; margin-bottom:0;">Dann registrierst du dich mit der Verteil-INI des Tutors neu und bekommst eine neue Schüler-INI. Boards auf dem Gerät bleiben erhalten – aber ältere private Sicherungen können nur noch vom Tutor geöffnet werden. Also: Datei gut sichern (z.&nbsp;B. USB-Stick oder Schul-Cloud).</p>
+    </div>
+  </div>
+
+  <!-- BOARDS ERSTELLEN -->
+  <div id="ch-boards-erstellen" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="layout-dashboard" style="width:24px;height:24px;"></i> Boards erstellen und duplizieren</span></div>
+    <p>Ein <strong style="color:var(--text);">Board</strong> ist dein Arbeitsbereich – zum Beispiel für ein Projekt, eine Klasse oder eine Aufgabensammlung. Die Seitenleiste öffnest du über den Menüknopf direkt neben dem Boardnamen. Dort klickst du auf <strong style="color:var(--text);">„＋ Neues Board"</strong>, um den Einrichtungsassistenten zu starten.</p>
+    <p style="margin-top:8px;">Der Assistent führt dich durch drei Schritte:</p>
+    <ol style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li><strong style="color:var(--text);">Board-Name</strong> – Gib dem Board einen aussagekräftigen Namen (z.&nbsp;B. „Klimawandel-Projekt" oder „Sprint 1").</li>
+      <li><strong style="color:var(--text);">Teamgröße</strong> – Wähle aus, wie viele Personen mitarbeiten (1–10). Das WIP-Limit wird automatisch berechnet: Teamgröße × 1,5, aufgerundet.</li>
+      <li><strong style="color:var(--text);">Nicknames</strong> – Gib für jede Person einen Namen oder Nickname ein. Diese erscheinen beim Zuweisen von Aufgaben als Auswahl.</li>
+    </ol>
+    <p style="margin-top:8px;">Nach der Erstellung enthält das Board drei Standardspalten: <em>— Offen</em>, <em>— In Bearbeitung</em> und <em>— Fertig</em>.</p>
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Board duplizieren:</strong> In der Seitenleiste erscheint beim Hovern über ein Board ein Kopier-Symbol. Ein Klick erstellt eine vollständige Kopie mit allen Spalten, Karten und Einstellungen.</p>
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Board löschen:</strong> Das Löschen kompletter Boards ist nur im Tutor-Modus möglich. Schülerinnen und Schüler erhalten dabei einen erklärenden Hinweis.</p>
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Board-Einstellungen:</strong> Ein Klick auf den Boardnamen öffnet ein Menü für Boardname, Lerngruppe und Personen. Tutoren können Personen dort umbenennen, hinzufügen oder löschen. Für Schülerinnen und Schüler sind diese Verwaltungsfunktionen gesperrt; sie erhalten stattdessen einen Hinweis, den Tutor zu fragen.</p>
+  </div>
+
+  <!-- SPALTEN -->
+  <div id="ch-spalten" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="columns" style="width:24px;height:24px;"></i> Spalten verwalten</span></div>
+    <p>Jedes Board besteht aus <strong style="color:var(--text);">Spalten</strong>, die den Status einer Aufgabe beschreiben. Du kannst beliebig viele eigene Spalten hinzufügen – klicke dafür auf <strong style="color:var(--text);">„＋ Spalte hinzufügen"</strong> ganz rechts im Board.</p>
+    <p style="margin-top:8px;">Spalten können über das Mülleimer-Symbol gelöscht werden. Das Löschen kompletter Spalten ist aus Sicherheitsgründen nur im Tutor-Modus möglich. <strong style="color:var(--danger);">Achtung:</strong> Dabei werden auch alle Karten in dieser Spalte unwiderruflich gelöscht.</p>
+    <p style="margin-top:8px;"><strong style="color:var(--text);">WIP-Limit:</strong> Die Spalte „In Bearbeitung" hat ein automatisches Limit für gleichzeitig aktive Aufgaben. Wenn das Limit erreicht ist, färbt sich die Spalte <strong style="color:#f59e0b;">orange</strong> (eine Karte unter dem Limit) bzw. <strong style="color:var(--danger);">rot</strong> (Limit erreicht). Im roten Zustand können keine weiteren Karten hineingezogen werden.</p>
+    <div class="help-tip">
+      <div class="help-tip-title">Die Voraussetzungen-Spalte</div>
+      <p style="margin-top:4px; margin-bottom:0;">Wenn du eine neue Spalte erstellst, fragt dich das System, ob dies die spezielle <strong style="color:var(--text);">Voraussetzungen-Spalte</strong> werden soll. Diese eignet sich perfekt, um Vorarbeiten abzulegen, von denen andere Karten abhängig sind. Karten in dieser Spalte gelten für Abhängigkeiten und Meilensteine als erledigt, tauchen aber nicht in der Benotung auf.</p>
+    </div>
+  </div>
+
+  <!-- KARTEN -->
+  <div id="ch-karten" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="copy" style="width:24px;height:24px;"></i> Karten erstellen und bearbeiten</span></div>
+    <p><strong style="color:var(--text);">Karten</strong> sind einzelne Aufgaben. Klicke auf <strong style="color:var(--text);">„＋ Karte hinzufügen"</strong> unterhalb einer Spalte, um eine neue Karte zu erstellen. Beim Erstellen kannst du direkt eine <strong style="color:var(--text);">Priorität</strong> wählen:</p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li><strong style="color:var(--danger);"><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--danger); margin-right:4px;"></span> Hoch</strong> – Muss dringend erledigt werden</li>
+      <li><strong style="color:#f59e0b;"><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#f59e0b; margin-right:4px;"></span> Mittel</strong> – Wichtig, aber nicht eilig</li>
+      <li><strong style="color:var(--success);"><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--success); margin-right:4px;"></span> Niedrig</strong> – Kann warten</li>
+    </ul>
+    <p style="margin-top:8px;">Per <strong style="color:var(--text);">Doppelklick</strong> auf eine Karte (oder über das Stift-Symbol) öffnest du den Bearbeitungsdialog. Dort kannst du:</p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li>Den <strong style="color:var(--text);">Text</strong> der Aufgabe ändern</li>
+      <li>Die <strong style="color:var(--text);">Priorität</strong> anpassen</li>
+      <li>Ein <strong style="color:var(--text);">Fälligkeitsdatum</strong> setzen</li>
+      <li>Die Karte einem <strong style="color:var(--text);">Teammitglied zuweisen</strong></li>
+    </ul>
+    <p style="margin-top:8px;">Wenn Meilensteine angelegt sind, zeigt jede Karte fett an, zu welcher Projektphase sie gehört. Diese Information erscheint sowohl auf der Karte im Board als auch im Bearbeitungsdialog.</p>
+    <p style="margin-top:8px;">Wird eine Karte im Hauptboard gelöscht, verschwindet sie nicht endgültig. Sie wird zuerst in die <strong style="color:var(--text);">Ideenbox</strong> verschoben und kann von dort wieder ins Board zurückkehren oder endgültig gelöscht werden. Karten in der Fertig-Spalte können nicht gelöscht werden.</p>
+  </div>
+
+  <!-- IDEEN -->
+  <div id="ch-ideen" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="lightbulb" style="width:24px;height:24px;"></i> Ideenbox</span></div>
+    <p>Die <strong style="color:var(--text);">Ideenbox</strong> erreichst du über die Schaltfläche <strong style="color:var(--text);">„Ideen"</strong> in der Leiste oberhalb des Boards. Dort sammelst du Karten, die noch nicht ins Board gehören, aber später wichtig werden können.</p>
+    <p style="margin-top:8px;">Neue Ideen haben wie normale Karten einen Titel, eine Beschreibung, eine Priorität, ein Fälligkeitsdatum, eine Zuweisung und eine Zeitschätzung. Du kannst sie jederzeit bearbeiten oder löschen.</p>
+    <p style="margin-top:8px;">Wenn eine Idee bereit ist, schiebst du sie mit <strong style="color:var(--text);">„In Vorbereitung"</strong> direkt in die gleichnamige Spalte. Falls diese Spalte noch nicht existiert, legt EDUBAN sie automatisch an.</p>
+    <p style="margin-top:8px;">Auch entfernte Board-Karten landen zuerst hier. Erst wenn du eine Karte in der Ideenbox löschst, ist sie endgültig entfernt.</p>
+    <div class="help-tip" style="margin-top:12px;">
+      <div class="help-tip-title">Typische Startideen</div>
+      <p style="margin-top:4px; margin-bottom:0;">Neue Boards enthalten bereits häufig gebrauchte Beispiele wie <strong style="color:var(--text);">Boardmaster bestimmen</strong>, Rollen im Team verteilen, Recherchequellen sammeln und einen Zwischencheck einplanen.</p>
+    </div>
+    <div class="help-info" style="margin-top:12px;">
+      <div class="help-info-title">Wird mitgespeichert</div>
+      <p style="margin-top:4px; margin-bottom:0;">Der Inhalt der Ideenbox gehört zum Board. Er wird zusammen mit dem Board gespeichert, dupliziert, im Text-Export ausgegeben und in EDUBAN-Images sowie Datenbank-Sicherungen mitgenommen.</p>
+    </div>
+  </div>
+
+  <!-- MEILENSTEINE -->
+  <div id="ch-meilensteine" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="flag" style="width:24px;height:24px;"></i> Meilensteine &amp; Projektphasen</span></div>
+    <p><strong style="color:var(--text);">Meilensteine</strong> sind Projektphasen, die nacheinander erreicht werden. Sie sind keine normalen Karten, sondern beschreiben grobe Etappen wie „Vorbereitung", „Produktentwurf" oder „Präsentation".</p>
+    <p style="margin-top:8px;">Du öffnest die Verwaltung über <strong style="color:var(--text);">„Meilensteine"</strong> in der Leiste oberhalb des Boards. Jede Phase bekommt einen Namen, eine kurze Beschreibung und eine Liste von Kartenlabels, zum Beispiel <strong style="color:var(--text);">A, B, C</strong>.</p>
+    <p style="margin-top:8px;">Eine Phase gilt als erreicht, sobald alle zugeordneten Karten in einer Fertig-Spalte liegen. Karten aus der Voraussetzungen-Spalte zählen für Meilensteine ebenfalls als erledigt, weil sie vorbereitende Rahmenbedingungen darstellen. Die Reihenfolge ist verbindlich: Spätere Phasen bleiben gesperrt, bis die vorherige Phase abgeschlossen ist. So entsteht eine klare Projektlogik statt einer bloßen Sammlung einzelner Aufgaben.</p>
+    <div class="help-info" style="margin-top:12px;">
+      <div class="help-info-title">Sichtbar im Board, U-Bahn-Plan und in der Timeline</div>
+      <p style="margin-top:4px; margin-bottom:0;">Auf dem Hauptbildschirm erscheinen die Projektphasen als Fortschrittsleiste. In der U-Bahn-Ansicht werden sie als sichtbare Phasengrenzen eingezeichnet: Ablaufkarten einer späteren Phase werden im Plan erst nach Abschluss der vorherigen Ablaufphase angeordnet. Übergeordnete, nicht verkettete Aufgaben wie Boardpflege werden daneben als phasenbegleitende Aufgaben gelistet und nicht in die Timeline übernommen.</p>
+    </div>
+    <div class="help-tip" style="margin-top:12px;">
+      <div class="help-tip-title">Wird mitgespeichert</div>
+      <p style="margin-top:4px; margin-bottom:0;">Meilensteine gehören zum Board. Sie werden in Vorlagen, Images, Datenbank-Sicherungen, Text-Export und KI-Import mitgenommen.</p>
+    </div>
+  </div>
+
+  <!-- KOMMENTARE -->
+  <div id="ch-kommentare" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="message-square" style="width:24px;height:24px;"></i> Kommentare und Feedback</span></div>
+    <p>Jede Karte hat ein <strong style="color:var(--text);">Kommentarsystem</strong>. Schülerinnen und Schüler können Notizen hinterlassen; der Tutor kann direkt an der Karte Feedback geben – sichtbar nach der Rückgabe des Images.</p>
+    <p style="margin-top:8px;">Auf jeder Karte siehst du kleine Symbole, die den Kommentar-Status anzeigen:</p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li><strong style="color:var(--text);"><i data-lucide="graduation-cap" style="width:14px;height:14px;vertical-align:-2px;"></i> Zahl</strong> – Anzahl der Tutor-Kommentare (Feedback)</li>
+      <li><strong style="color:var(--text);"><i data-lucide="message-square" style="width:14px;height:14px;vertical-align:-2px;"></i> Zahl</strong> – Anzahl der SchülerIn-Kommentare</li>
+      <li><strong style="color:var(--text-muted);"><i data-lucide="message-square-plus" style="width:14px;height:14px;vertical-align:-2px;"></i> (leer)</strong> – Noch keine Kommentare</li>
+    </ul>
+    <p style="margin-top:8px;">Klicke auf eines dieser Symbole, um die Kommentarliste zu öffnen. Neuen Kommentar schreiben und mit <strong style="color:var(--text);">Enter</strong> oder „Senden" abschicken.</p>
+  </div>
+
+  <!-- ABHÄNGIGKEITEN -->
+  <div id="ch-abhaengigkeiten" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="link" style="width:24px;height:24px;"></i> Voraussetzungen &amp; Abhängigkeiten</span></div>
+    <p>Bei komplexen Projekten kann eine Aufgabe erst gestartet werden, wenn eine andere bereits erledigt ist. Dafür gibt es das <strong style="color:var(--text);">Abhängigkeitssystem</strong>.</p>
+    <p style="margin-top:8px;">Das Ketten-Symbol auf jeder Karte zeigt den Status:</p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li><strong style="color:var(--danger);"><i data-lucide="link" style="width:14px;height:14px;vertical-align:-2px;"></i> Rote Kette</strong> – Voraussetzungen fehlen noch. Diese Karte ist <strong style="color:var(--text);">blockiert</strong>.</li>
+      <li><strong style="color:var(--success);"><i data-lucide="link" style="width:14px;height:14px;vertical-align:-2px;"></i> Grüne Kette</strong> – Alle Voraussetzungen erfüllt. Die Aufgabe ist freigegeben.</li>
+      <li><strong style="color:var(--text-muted);"><i data-lucide="link" style="width:14px;height:14px;vertical-align:-2px;"></i> Graue Kette</strong> – Keine Voraussetzungen definiert.</li>
+    </ul>
+    <p style="margin-top:8px;">Ein Klick auf das Symbol öffnet die Verknüpfungsliste.</p>
+  </div>
+
+  <!-- DRAG & DROP -->
+  <div id="ch-dragdrop" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="move" style="width:24px;height:24px;"></i> Karten verschieben</span></div>
+    <p>Es gibt zwei Wege, Karten zwischen Spalten zu verschieben:</p>
+    <p style="margin-top:8px;"><strong style="color:var(--text);">1. Drag &amp; Drop</strong> – Halte eine Karte gedrückt und ziehe sie in die gewünschte Spalte.</p>
+    <p style="margin-top:8px;"><strong style="color:var(--text);">2. Pfeil-Buttons</strong> – Die Pfeile <i data-lucide="chevron-left" style="width:14px;height:14px;vertical-align:-2px;"></i> <i data-lucide="chevron-right" style="width:14px;height:14px;vertical-align:-2px;"></i> verschieben die Karte spaltenweise; <i data-lucide="chevron-up" style="width:14px;height:14px;vertical-align:-2px;"></i> <i data-lucide="chevron-down" style="width:14px;height:14px;vertical-align:-2px;"></i> sortieren innerhalb der Spalte.</p>
+    <div class="help-tip">
+      <div class="help-tip-title">Verschieben blockiert?</div>
+      <p style="margin-top:4px; margin-bottom:0;">Karten mit unerfüllten Voraussetzungen (<strong style="color:var(--danger);">rote Kette</strong>) können nicht nach rechts verschoben werden.</p>
+    </div>
+    <p style="margin-top:10px;">Beim Verschieben werden automatisch <strong style="color:var(--text);">Zeitstempel</strong> gesetzt: Startdatum (erstes Verlassen von „Offen") und Enddatum (Eingang in „Fertig").</p>
+  </div>
+
+  <!-- GRUPPIEREN -->
+  <div id="ch-gruppieren" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="link-2" style="width:24px;height:24px;"></i> Karten verketten (Gruppen)</span></div>
+    <p>Zusammengehörige Aufgaben können <strong style="color:var(--text);">verkettet</strong> werden – sie bilden dann einen gemeinsamen optischen Block und bewegen sich beim Verschieben immer gemeinsam.</p>
+    <p style="margin-top:8px;">Klicke auf das <strong style="color:var(--accent);"><i data-lucide="link-2" style="width:14px;height:14px;vertical-align:-2px;"></i> Link-Symbol</strong> in der Kartenleiste, um die Karte mit der darunterliegenden zu verbinden. Zum Lösen: <strong style="color:var(--danger);"><i data-lucide="unlink" style="width:14px;height:14px;vertical-align:-2px;"></i> zerbrochene Kette</strong> klicken.</p>
+    <div class="help-info">
+      <div class="help-info-title">Gruppenarbeit</div>
+      <p style="margin-top:4px; margin-bottom:0;">Trotz Verkettung bleiben Karten intern eigenständig – im Notenmodul können weiterhin individuelle Noten vergeben werden.</p>
+    </div>
+  </div>
+
+  <!-- LÖSCHEN -->
+  <div id="ch-loeschen" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="trash-2" style="width:24px;height:24px;"></i> Karten löschen</span></div>
+    <p>Karten können über das <strong style="color:var(--text);">Mülleimer-Symbol</strong> gelöscht werden. Du kannst nur <strong style="color:var(--text);">eigene Karten</strong> löschen – also Karten, die dir zugewiesen sind oder keiner Person zugewiesen wurden. Tutoren können alle Karten löschen.</p>
+    <p style="margin-top:8px;">Karten in der Spalte <strong style="color:var(--text);">„Fertig"</strong> sind in der Schüleransicht geschützt. Sie können dort nicht gelöscht oder wieder aus der Fertig-Spalte entfernt werden. Der Tutor kann eine fertige Karte ausnahmsweise zurückschieben, erhält vorher aber eine Warnung: Alle Prozessnoten, Aufwands-Gewichtungen und Bewertungskommentare dieser Karte werden dabei gelöscht. Wenn die Karte später erneut nach „Fertig" kommt, muss sie neu bewertet werden. Oft ist es pädagogisch besser, stattdessen eine neue Karte für Nacharbeiten anzulegen.</p>
+  </div>
+
+  <!-- HINTERGRUND -->
+  <div id="ch-hintergrund" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="palette" style="width:24px;height:24px;"></i> Hintergrund anpassen</span></div>
+    <p>Öffne die Seitenleiste über den Menüknopf neben dem Boardnamen und klicke dort auf <strong style="color:var(--text);">Einstellungen</strong>:</p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:6px;">
+      <li><strong style="color:var(--text);">Erscheinungsbild</strong> – Dunkler oder heller Modus</li>
+      <li><strong style="color:var(--text);">Panel-Transparenz</strong> – Regler für die Durchsichtigkeit der Bedienelemente</li>
+      <li><strong style="color:var(--text);">Hintergrund</strong> – Farbverläufe oder Hintergrundbilder (H1–H60)</li>
+    </ul>
+    <p style="margin-top:8px;">Alle Einstellungen werden lokal auf diesem Gerät gespeichert.</p>
+  </div>
+
+  <!-- Termine -->
+  <div id="ch-termine" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="calendar" style="width:24px;height:24px;"></i> Termine und Fristen</span></div>
+    <p>Das Kanban-Board hilft dir dabei, zeitliche Vorgaben nicht aus den Augen zu verlieren. Es gibt drei Arten von Fristen:</p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li><strong style="color:var(--text);">Fälligkeitsdatum pro Karte:</strong> Kannst du selbst im Bearbeitungsdialog der Karte setzen.</li>
+      <li><strong style="color:var(--text);">Projekt-Deadline:</strong> Wird im Werkzeugkasten gesetzt und gilt für das gesamte Board. Sie wird oben als farbiger Countdown angezeigt.</li>
+      <li><strong style="color:var(--text);">Aging-Warnung:</strong> Karten, die zu lange in der Spalte „In Bearbeitung“ liegen, werden rötlich markiert. Das "Aging" (die Alterung) kann mit dem <strong style="color:var(--text);">Sanduhr-Symbol</strong> pausiert werden (z.&nbsp;B. während der Schulferien). Diese Pause darf nur der Tutor ein- oder ausschalten.</li>
+    </ul>
+    <p style="margin-top:10px;">Für Tutoren sind Projekt-Deadline und Aging besonders wichtig, weil sie sichtbar machen, ob ein Projekt insgesamt im Zeitplan liegt und welche Aufgaben zu lange unbearbeitet bleiben. Die genaue Einstellung wird im Abschnitt <a href="#ch-tutor-deadline-aging" style="color:var(--accent);">Deadline &amp; Aging steuern</a> erklärt.</p>
+  </div>
+
+  <!-- U-Bahn -->
+  <div id="ch-ubahn" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="train-front" style="width:24px;height:24px;"></i> U-Bahn-Ansicht (Projektablauf)</span></div>
+
+    <div class="help-info" style="margin-top:0; margin-bottom:16px;">
+      <div class="help-info-title">Warum ein U-Bahn-Plan?</div>
+      <p style="margin-top:4px; margin-bottom:0;">Ein komplexes Projekt ist wie der Nahverkehr einer Großstadt: Jedes Teammitglied fährt auf seiner eigenen <strong>Linie</strong>. Die Aufgaben sind die <strong>Stationen</strong>. Wenn Personen zusammenarbeiten, kreuzen sich ihre Linien an einer <strong>Umsteigestation</strong>. Muss jemand auf die Vorarbeit eines anderen warten, zeigt der Plan, wo es zu Verzögerungen kommt. Diese Metapher macht selbst komplizierteste Projektabläufe sofort intuitiv verständlich!</p>
+    </div>
+
+    <p>Klicke auf dem Hauptbildschirm auf das <strong style="color:var(--text);">Zug-Symbol</strong>, um die U-Bahn-Ansicht zu öffnen. Diese Ansicht verwandelt dein Kanban-Board in einen intelligenten Liniennetzplan – ideal, um Engpässe und Abhängigkeiten sofort zu erkennen.</p>
+    
+    <p style="margin-top:10px;"><strong style="color:var(--text);">So liest du den Plan:</strong></p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:6px;">
+      <li><strong style="color:var(--text);">Die Linien:</strong> Jede Person im Team bekommt eine eigene, farbige U-Bahn-Linie.</li>
+      <li><strong style="color:var(--text);">Die Stationen:</strong> Jede Aufgabe (Karte) ist eine Station auf der Linie. Klicke auf eine Station, um die Kartendetails zu öffnen oder die Karte in eine andere Spalte zu verschieben.</li>
+      <li><strong style="color:var(--text);">Umsteigestationen (Gruppen):</strong> Wenn mehrere Personen an einer Aufgabe arbeiten, treffen sich ihre Linien an einer großen, gemeinsamen Station.</li>
+      <li><strong style="color:var(--text);">Pulsierende Ringe:</strong> Aufgaben, die sich aktuell in der Spalte „In Bearbeitung“ befinden, haben einen animierten, pulsierenden Ring. So siehst du sofort, wo aktuell im Projekt gearbeitet wird.</li>
+    </ul>
+
+    <div class="help-tip">
+      <div class="help-tip-title"><i data-lucide="mouse-pointer-2" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"></i> Der Röntgen-Blick (Hover-Effekt)</div>
+      <p style="margin-top:4px; margin-bottom:0;">Wenn du mit der Maus über eine Station fährst (ohne zu klicken), dunkelt sich das restliche Netz ab und zeigt dir die genaue Kette der Abhängigkeiten für diese spezifische Aufgabe:</p>
+      <ul style="margin:6px 0 0 16px; display:flex; flex-direction:column; gap:2px;">
+        <li><strong style="color:#f59e0b;">Orange Stationen:</strong> Diese Aufgaben sind Voraussetzungen und müssen <em>vorher</em> erledigt werden.</li>
+        <li><strong style="color:var(--success);">Grüne Stationen:</strong> Diese Aufgaben werden durch die aktuelle Station <em>freigeschaltet</em> (Nachfolger).</li>
+      </ul>
+      <p style="margin-top:6px; margin-bottom:0; font-size:12px; opacity:0.8;">Je weiter entfernt eine Aufgabe in dieser Kette ist, desto schwächer leuchtet sie. So erkennst du sofort, ob eine Aufgabe ein kritischer Flaschenhals ist.</p>
+    </div>
+
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Karten-Detailpopup – direkt aus dem Plan heraus bearbeiten:</strong></p>
+    <p>Ein Klick auf eine Station öffnet das Detailfenster der Karte. Dort kannst du nicht nur Titel, Beschreibung und Zeitschätzung ändern, sondern auch <strong style="color:var(--text);">Abhängigkeiten und Gruppenarbeit direkt editieren</strong> – ohne zurück zur Hauptansicht zu wechseln:</p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li><strong style="color:var(--text);">Abhängigkeiten (⬆ Muss vorher fertig sein):</strong> Bestehende Abhängigkeiten lassen sich über das <strong style="color:var(--danger);">×</strong>-Symbol direkt entfernen. Über das Dropdown darunter kannst du neue Vorgänger-Aufgaben aus allen vorhandenen Karten hinzufügen.</li>
+      <li><strong style="color:var(--text);">Gruppenarbeit mit:</strong> Gruppenmitglieder lassen sich genauso per <strong style="color:var(--danger);">×</strong> entfernen. Über das Dropdown kannst du weitere Personen hinzufügen – die App legt dabei automatisch eine gemeinsame Gruppen-ID an, falls die Karte noch nicht Teil einer Gruppe war.</li>
+    </ul>
+    <p style="margin-top:8px;">Alle Änderungen wirken sich sofort auf den U-Bahn-Plan und die Projekt-Timeline aus – ideal, um im Zeitplan zu experimentieren: Was passiert, wenn man eine Gruppenarbeit aufteilt? Welche Auswirkung hat das Entfernen einer Abhängigkeit auf die Gesamtdauer?</p>
+
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Ansicht anpassen &amp; Export:</strong></p>
+    <p>Über das schwebende Kontroll-Panel auf der linken Seite kannst du den Abstand zwischen den Stationen mit einem Schieberegler (<i data-lucide="sliders-horizontal" style="width:14px;height:14px;vertical-align:-2px;"></i>) anpassen, falls das Netz zu gedrungen wirkt. Über das Download-Symbol (<i data-lucide="download" style="width:14px;height:14px;vertical-align:-2px;"></i>) lässt sich der gesamte U-Bahn-Plan als hochauflösendes Bild abspeichern oder ausdrucken.</p>
+  </div>
+  <!-- PROJEKT-TIMELINE -->
+  <div id="ch-timeline" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="bar-chart-2" style="width:24px;height:24px;"></i> Projekt-Timeline (Gantt)</span></div>
+    <p>Die <strong style="color:var(--text);">Projekt-Timeline</strong> zeigt alle Aufgaben als Balkendiagramm (Gantt-Chart) – eine Zeile pro Person, mit einer Zeitachse in <strong style="color:var(--text);">Schulstunden</strong>. Eine Schulstunde entspricht 45 Minuten; zwei Schulstunden bilden einen 90-Minuten-Block. Klicke in der U-Bahn-Ansicht auf den Button <strong style="color:var(--text);">„Timeline"</strong>, um sie zu öffnen.</p>
+
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Den Plan lesen</strong></p>
+    <p>Jeder Balken steht für eine Aufgabe. Die horizontale Position ergibt sich aus dem berechneten oder manuell gesetzten Startzeitpunkt. Der grün hinterlegte Bereich zeigt das <strong style="color:var(--text);">erlaubte Zeitfenster</strong>: links die grüne gestrichelte Linie (frühester Start, alle Vorgänger müssen fertig sein), rechts die rote gestrichelte Linie (spätester Start, damit Nachfolger noch pünktlich beginnen können).</p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li>Durchgezogener Rahmen = Einzelaufgabe</li>
+      <li>Gestrichelter Rahmen = Gruppenarbeit (alle Mitglieder starten gleichzeitig)</li>
+      <li>📌 = Startzeitpunkt wurde manuell fixiert</li>
+      <li>Mehrere Balken übereinander in einer Zeile = Person hat parallele Aufgaben (Sub-Lanes)</li>
+    </ul>
+    <p style="margin-top:8px;">Die Balken werden maßstäblich nach ihrer geschätzten Bearbeitungszeit gezeichnet. Sehr kurze Aufgaben, zum Beispiel 5 Minuten, bleiben deshalb bewusst schmal. Mit den Zoomstufen <strong style="color:var(--text);">Kompakt</strong>, <strong style="color:var(--text);">Normal</strong>, <strong style="color:var(--text);">Detail</strong> und <strong style="color:var(--text);">Stunden</strong> (eine Doppelstunde füllt die Bildschirmbreite, Raster 15 Minuten) kannst du kurze Zeitblöcke besser betrachten.</p>
+    <p style="margin-top:8px;">Über jedem 90-Minuten-Block kannst du optional ein informelles Datum oder eine Notiz eintragen, zum Beispiel „Mo 3./4. Stunde". Diese Angabe dient nur der Planung, hat keinen Einfluss auf die Berechnung und wird mit dem Board gespeichert.</p>
+
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Balken verschieben (Drag &amp; Drop)</strong></p>
+    <p>Halte einen Balken gedrückt und ziehe ihn nach links oder rechts. Die Position rastet auf 45-Minuten-Schritte ein. Bei Gruppenarbeiten verschiebt sich automatisch die gesamte Gruppe. Beim Loslassen wird der neue Startzeitpunkt als 📌 Fixierung gespeichert und die Timeline aktualisiert sich sofort.</p>
+    <p style="margin-top:8px;">Ein <strong style="color:var(--text);">Doppelklick</strong> auf einen Balken öffnet die Kartendetails. Ein einfacher Klick markiert die Karte – mit den Buttons <strong style="color:var(--text);">„Auswahl → nächste Std."</strong> und <strong style="color:var(--text);">„+ 1 Std."</strong> verschiebst du die markierte Karte samt parallelen und späteren Aufgaben auf die nächste Schulstunde.</p>
+    <div class="help-tip">
+      <div class="help-tip-title">Fixierung aufheben</div>
+      <p style="margin-top:4px; margin-bottom:0;">Klicke mit der <strong style="color:var(--text);">rechten Maustaste</strong> auf einen fixierten Balken, um die manuelle Zeitfixierung zu entfernen. Bei Gruppenarbeiten werden alle Mitglieder der Gruppe gleichzeitig freigegeben. Die Aufgaben kehren zur automatisch berechneten Position zurück.</p>
+    </div>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">⚡ Optimieren – automatischer Zeitplan</strong></p>
+    <p>Der Button <strong style="color:var(--text);">„⚡ Optimieren"</strong> berechnet den <strong style="color:var(--text);">schnellstmöglichen Ablaufplan</strong> für das gesamte Projekt. Der Algorithmus arbeitet in drei Schritten:</p>
+    <ol style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li><strong style="color:var(--text);">Abhängigkeiten auflösen:</strong> Alle Aufgaben werden topologisch sortiert – Vorgänger kommen immer vor ihren Nachfolgern.</li>
+      <li><strong style="color:var(--text);">ASAP-Scheduling:</strong> Jede Aufgabe startet so früh wie möglich, sobald alle Vorgänger abgeschlossen und die Person frei ist.</li>
+      <li><strong style="color:var(--text);">Gruppen synchronisieren:</strong> Alle Mitglieder einer Gruppenarbeit starten gleichzeitig – zum spätestmöglichen Zeitpunkt, zu dem <em>alle</em> Beteiligten verfügbar sind.</li>
+    </ol>
+    <p style="margin-top:8px;">Das Ergebnis ist ein Zeitplan, der möglichst viele Personen gleichzeitig beschäftigt und die Gesamtprojektdauer minimiert. Die berechneten Startzeitpunkte werden als 📌 Fixierungen gespeichert und können danach weiterhin manuell angepasst werden.</p>
+    <div class="help-info">
+      <div class="help-info-title">Tipp: Optimieren + Experimentieren kombinieren</div>
+      <p style="margin-top:4px; margin-bottom:0;">Nutze „Optimieren" als Ausgangspunkt, teste dann im Karten-Detailpopup (U-Bahn-Ansicht), was passiert wenn du eine Abhängigkeit entfernst oder eine Gruppe aufteilst – und klicke danach erneut auf „Optimieren", um den neuen Zeitplan zu berechnen.</p>
+    </div>
+
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">🔴 Kritischer Pfad &amp; Pufferzeiten</strong></p>
+    <p>Balken mit <strong style="color:#ef4444;">rotem Streifen</strong> liegen auf dem <strong style="color:var(--text);">kritischen Pfad</strong>: Verspätet sich eine dieser Aufgaben, verschiebt sich das gesamte Projektende. Alle anderen Aufgaben haben <strong style="color:var(--text);">Puffer</strong> – wie viel, zeigt der Tooltip beim Überfahren des Balkens. Die genauen Werte (FAZ/SAZ) stehen im <a href="#ch-netzplan" style="color:var(--accent);">Netzplan</a>.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">✓ Projektfortschritt</strong></p>
+    <p>Erledigte Aufgaben erscheinen abgehakt (✓, durchgestrichen, abgedunkelt), laufende mit ▶. Die Kopfzeile zeigt „Erledigt: X/Y Aufgaben". Ein <strong style="color:#ef4444;">⚠</strong> warnt, wenn eine Aufgabe gestartet wurde, obwohl ein Vorgänger noch nicht fertig ist – der Tooltip nennt die offenen Vorgänger.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">📋 Stundenzettel</strong></p>
+    <p>Der Button <strong style="color:var(--text);">„📋 Stundenzettel"</strong> erzeugt eine <strong style="color:var(--text);">druckbare Aufgabenliste pro Unterrichtsblock und Person</strong> – mit Ankreuzkästchen, Minutenangaben und deinen Block-Beschriftungen („Di, 3. Std."). Ideal als Handout: Jede Person sieht auf einen Blick, was sie in der Stunde zu tun hat. Kritische Aufgaben sind markiert.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">🖨 Drucken</strong></p>
+    <p>Der Button <strong style="color:var(--text);">„🖨 Drucken"</strong> öffnet den Zeitplan in einem separaten Fenster, das sofort den Druckdialog startet. Der gesamte Balkenplan wird dabei seitengerecht aufbereitet – einschließlich aller Personen-Zeilen und der vollständigen Zeitachse.</p>
+  </div>
+
+  <!-- NETZPLAN -->
+  <div id="ch-netzplan" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="workflow" style="width:24px;height:24px;"></i> Netzplan (kritischer Pfad &amp; Puffer)</span></div>
+    <p>Der <strong style="color:var(--text);">Netzplan</strong> (über das Werkzeug-Panel der U-Bahn-Ansicht) zeigt alle verknüpften Karten als Abhängigkeitsbaum: Start-Karten oben, produktnahe Karten unten, Pfeile zeigen „muss vorher fertig sein". Ein Klick auf einen Knoten öffnet die Kartendetails.</p>
+    <p style="margin-top:10px;">Jeder Knoten zeigt die Werte der klassischen <strong style="color:var(--text);">Netzplantechnik</strong> in Schulstunden:</p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li><strong style="color:var(--text);">FAZ</strong> – frühester Anfangszeitpunkt (alle Vorgänger gerade fertig)</li>
+      <li><strong style="color:var(--text);">SAZ</strong> – spätester Anfangszeitpunkt, ohne das Projektende zu verschieben</li>
+      <li><strong style="color:var(--text);">Puffer</strong> – erlaubte Verspätung (SAZ − FAZ)</li>
+    </ul>
+    <p style="margin-top:10px;">Karten mit <strong style="color:#ef4444;">Puffer 0</strong> bilden den <strong style="color:#ef4444;">kritischen Pfad</strong>: Sie sind rot umrandet, ihre Verbindungspfeile sind rot. Diese Kette bestimmt die Gesamtdauer des Projekts – hier lohnt es sich, zuerst zu optimieren (mehr Personen, Aufgabe teilen, Abhängigkeit überdenken).</p>
+    <div class="help-info">
+      <div class="help-info-title">Für den Unterricht</div>
+      <p style="margin-top:4px; margin-bottom:0;">Der Netzplan entspricht der Darstellung aus dem Projektmanagement-Unterricht (Vorwärts-/Rückwärtsrechnung). Er eignet sich, um mit der Lerngruppe zu besprechen, warum manche Aufgaben eilig sind und andere warten dürfen.</p>
+    </div>
+  </div>
+
+  <!-- EXPORT / IMAGE / KI IMPORT -->
+  <div id="ch-export-import" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="file-json" style="width:24px;height:24px;"></i> Exportieren, Image und KI Import</span></div>
+    <p>In der Leiste oberhalb des Boards findest du die Ideenbox, die Meilensteine, das Streckennetz, den Text-Export, den KI Import und den KI-Assistenten.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">💾 Exportieren</strong></p>
+    <p>Gibt den gesamten Board-Inhalt als formatierten Klartext aus – mit Ideenbox, Meilensteinen, allen Spalten, Karten, Prioritäten, Zuweisungen, Zeitstempeln, Abhängigkeiten und Kommentaren. Der Text lässt sich kopieren und eignet sich als Dokumentation oder als Grundlage für den KI-Assistenten.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">📥 Image exportieren (Dateiverwaltung in der Seitenleiste)</strong></p>
+    <p>Der Button <strong style="color:var(--text);">„Alles exportieren &amp; sichern"</strong> in der Dateiverwaltung erzeugt ein verschlüsseltes <strong style="color:var(--text);">Image</strong> – die eigentliche Datei, die du deinem Tutor gibst. Im Schüler-Modus enthält das Image Boards, Ideen, Karten, Kommentare und Einstellungen, aber <strong style="color:var(--text);">keine Tutor-Noten</strong>. Die Datei ist mit dem Geheimnis aus deiner Schüler-INI und dem öffentlichen Schlüssel des Tutors doppelt verschlüsselt – du musst dir kein Passwort merken.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">📂 Importieren (Dateiverwaltung in der Seitenleiste)</strong></p>
+    <p>Damit lädst du ein Image, das du von deinem Tutor zurückbekommen hast. Es wird automatisch mit deiner Schüler-INI entschlüsselt – kein Passwort nötig.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">📤 Abgabe als Datei speichern (SchülerInnen)</strong></p>
+    <p>Erzeugt das verschlüsselte Abgabe-Image als lokale Datei – zum Beispiel, um es per E-Mail an den Tutor zu schicken oder auf einen USB-Stick zu legen. Funktioniert auch auf dem iPad (die Datei landet in „Downloads"). Das ist die Alternative zur Datenbank-Weiterleitung.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">☁ Datenbank speichern und laden</strong></p>
+    <p>Die Datenbankfunktion ist eine Alternative zum manuellen Weitergeben von Dateien. Es werden nur verschlüsselte EDUBAN-Images hochgeladen. Schülerinnen und Schüler können private Sicherungen speichern, laden und löschen. Nur wenn sie <strong style="color:var(--text);">„An den Tutor weiterleiten"</strong> wählen, erscheint das Image beim Tutor. Tutoren können weitergeleitete Schüler-Images laden und Rückgaben verschlüsselt wieder dort ablegen. Die Anmeldung bei Firebase läuft automatisch anonym im Hintergrund.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">▦ Board-Vorlagen</strong></p>
+    <p>In der Dateiverwaltung gibt es einen eigenen Bereich <strong style="color:var(--text);">„Vorlagen"</strong>. Tutoren können das aktuell geöffnete Board dort als offene Vorlage exportieren oder in der Datenbank speichern. Schülerinnen und Schüler laden eine Vorlage über Datei oder Datenbank und erhalten daraus ein neues eigenes Board. Diese Vorlage ist bewusst nicht verschlüsselt, damit sie sofort als Startpunkt nutzbar ist; spätere Schüler-Images werden wieder verschlüsselt gesichert.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">✦ KI Import</strong></p>
+    <p>Liest einen JSON-Code ein, den ein KI-System (ChatGPT, Claude, Gemini) für dich erstellt hat. Das System erkennt automatisch, ob es sich um einen vollständigen Board-Entwurf oder eine Ergänzung handelt. Nutze dafür den <strong style="color:var(--text);">KI-Assistenten</strong> (Roboter-Symbol), der dir einen fertigen Prompt zum Kopieren erzeugt.</p>
+
+    <div class="help-info">
+      <div class="help-info-title">KI-Prinzip</div>
+      <p style="margin-top:4px; margin-bottom:0;">KI-Funktionen sind bewusst <strong style="color:var(--text);">nicht</strong> in die App eingebaut – kein API-Key, keine Datenübertragung. Du kopierst den Prompt manuell in das KI-System deiner Wahl und fügst das Ergebnis über KI Import ein.</p>
+    </div>
+  </div>
+
+  <!-- PWA -->
+  <div id="ch-pwa" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="smartphone" style="width:24px;height:24px;"></i> App installieren</span></div>
+    <p>EDUBAN kann als <strong style="color:var(--text);">eigenständige App</strong> installiert werden – ohne App Store. Auf Android und Desktop-Chrome erscheint automatisch ein Installationshinweis. Auf dem iPhone: Seite in Safari öffnen, dann <em>Teilen → Zum Home-Bildschirm</em>.</p>
+    <p style="margin-top:8px;">Die installierte Version öffnet sich im Vollbildmodus ohne Browser-Adressleiste. Alle Daten bleiben lokal auf dem Gerät.</p>
+  </div>
+
+  <!-- TUTOR-BEREICH -->
+  <!-- VERSIONEN -->
+  <div id="ch-versionen" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="git-branch" style="width:24px;height:24px;"></i> Die zwei App-Versionen</span></div>
+    <p>EDUBAN gibt es in zwei Varianten, jeweils für Tutor und SchülerInnen – gestartet per Doppelklick auf die passende Startdatei im Projektordner:</p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:6px;">
+      <li><strong style="color:var(--text);">Mit Datenbank</strong> („Start EDUBAN Tutor/Schueler mit Datenbank"): zusätzlich zur Datei-Weitergabe können Abgaben, Rückgaben und Vorlagen verschlüsselt über die Datenbank ausgetauscht werden.</li>
+      <li><strong style="color:var(--text);">Ohne Datenbank</strong> („Start EDUBAN Tutor/Schueler ohne Datenbank"): komplett offline-fähig, kein Firebase. Boards werden ausschließlich verschlüsselt als <strong style="color:var(--text);">Datei</strong> gespeichert, abgegeben und zurückgegeben – z.&nbsp;B. per E-Mail oder USB-Stick.</li>
+    </ul>
+    <p style="margin-top:8px;">Anmeldung, Schlüsseldateien, Benotung und alle Ansichten (U-Bahn, Timeline, Netzplan) sind in beiden Versionen identisch. Beide Versionen teilen sich die Daten auf demselben Gerät.</p>
+  </div>
+
+  <div style="margin:28px 0 16px; padding:12px 18px; background:rgba(77,127,255,0.08); border-left:3px solid var(--accent); border-radius:0 8px 8px 0;">
+    <div style="font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--accent);">Für Tutoren</div>
+    <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Die folgenden Funktionen sind nur im Tutor-Modus verfügbar.</div>
+  </div>
+
+  <!-- INI ERSTELLEN -->
+  <div id="ch-ini-erstellen" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="key" style="width:24px;height:24px;"></i> Tutor-Schlüssel erstellen (passwortfrei)</span></div>
+    <p>EDUBAN arbeitet ohne Masterpasswort – stattdessen erstellst du einmalig <strong style="color:var(--text);">zwei Schlüsseldateien</strong>:</p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:6px;">
+      <li><strong style="color:var(--text);">Privater Tutor-Schlüssel</strong> („…SCHLUESSEL-privat.ini") – <strong style="color:var(--danger);">bleibt bei dir!</strong> Er enthält deinen privaten Schlüssel und ersetzt das frühere Masterpasswort: Damit speicherst du Backups, öffnest Schüler-Abgaben und sicherst Noten – alles ohne Passwortabfrage.</li>
+      <li><strong style="color:var(--text);">Verteil-INI</strong> („…fuer-schueler.ini") – enthält nur deinen Namen und den öffentlichen Schlüssel. <strong style="color:var(--text);">Nur diese Datei</strong> gibst du an deine Schülerinnen und Schüler weiter.</li>
+    </ul>
+    <p style="margin-top:8px;">So gehst du vor: Beim ersten Tutor-Start erscheint der Einrichtungsbereich (oder jederzeit Seitenleiste → <strong style="color:var(--text);">„Tutor-Schlüssel erstellen"</strong>). Namen eingeben, beide Dateien nacheinander speichern – fertig. Der private Schlüssel bleibt auf dem Gerät geladen.</p>
+    <div class="help-tip">
+      <div class="help-tip-title">Wichtig</div>
+      <p style="margin-top:4px; margin-bottom:0;">Bewahre den privaten Tutor-Schlüssel sicher auf (z.&nbsp;B. USB-Stick plus Sicherungskopie). <strong style="color:var(--danger);">Wer die Datei hat, kann alle Abgaben öffnen</strong> – und ohne sie kannst auch du die Images deiner Schülerinnen und Schüler nicht mehr öffnen. Verwechsle die Dateien nicht: Die App weist den privaten Schlüssel bei der Schüler-Registrierung automatisch ab, falls er versehentlich verteilt wird.</p>
+    </div>
+    <div class="help-info">
+      <div class="help-info-title">Alte INI mit Masterpasswort?</div>
+      <p style="margin-top:4px; margin-bottom:0;">INI-Dateien aus früheren Versionen funktionieren weiterhin – dann fragt die App einmal pro Sitzung nach dem Masterpasswort. Für den passwortfreien Betrieb einfach neue Schlüsseldateien erstellen und die neue Verteil-INI an die Klasse geben.</p>
+    </div>
+  </div>
+
+  <!-- IMAGE EINES SCHÜLERS ÖFFNEN -->
+  <div id="ch-image-oeffnen" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="folder-open" style="width:24px;height:24px;"></i> Image einer Schülerin oder eines Schülers öffnen</span></div>
+    <p>Wenn du eine Image-Datei (<code>.json</code>) erhältst – per Datei oder aus der Datenbank – gehst du so vor:</p>
+    <ol style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li>Klicke auf <strong style="color:var(--text);">„Importieren (.json)"</strong> und wähle das Image</li>
+      <li>Fertig – dein geladener Tutor-Schlüssel entschlüsselt die Datei automatisch, ohne Passwort</li>
+    </ol>
+    <p style="margin-top:8px;">Ist noch kein Tutor-Schlüssel geladen (z.&nbsp;B. auf einem neuen Gerät), fragt die App einmalig nach der Datei. Danach kannst du Kommentare hinterlassen, Noten vergeben und das Board bearbeiten.</p>
+    <div class="help-tip">
+      <div class="help-tip-title">Rückfrage bei vorhandenen Noten</div>
+      <p style="margin-top:4px; margin-bottom:0;">Sind für dieses Board lokal bereits Noten vorhanden, fragt die App beim Import, ob die Abgabe von <strong style="color:var(--text);">derselben Gruppe</strong> stammt. Nur dann werden die Noten übernommen – so können keine Bewertungen einer anderen Gruppe anhaften.</p>
+    </div>
+  </div>
+
+  <!-- DEADLINE UND AGING FUER TUTOREN -->
+  <div id="ch-tutor-deadline-aging" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="calendar-clock" style="width:24px;height:24px;"></i> Deadline &amp; Aging steuern</span></div>
+    <p>Tutoren können im <strong style="color:var(--text);">Werkzeugkasten</strong> eines Boards zentrale Zeitregeln setzen. Öffne ihn über das Werkzeug-Symbol neben dem Board. Diese Einstellungen gelten für das gesamte Board und helfen beim Beobachten des Projektfortschritts.</p>
+
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Projekt-Deadline</strong></p>
+    <p>Die Deadline ist der gemeinsame Abgabetermin des Boards. Nach dem Speichern erscheint oben am Board ein Countdown. Je näher der Termin rückt, desto deutlicher wird die Anzeige. Ist die Deadline überschritten, wird das als Warnsignal sichtbar. Das ersetzt keine Bewertung, zeigt aber schnell, ob das Team noch im Zeitplan arbeitet.</p>
+
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Aging-Limit</strong></p>
+    <p>Das Aging-Limit legt fest, nach wie vielen Tagen eine Karte in <strong style="color:var(--text);">„In Bearbeitung"</strong> als zu alt markiert wird. Solche Karten bekommen eine rote Aging-Warnung mit der Dauer, seit der sie in Bearbeitung sind. Das ist hilfreich, um Blockaden, liegengelassene Aufgaben oder unklare Zuständigkeiten früh zu erkennen.</p>
+
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Aging pausieren</strong></p>
+    <p>Mit dem <strong style="color:var(--text);">Sanduhr-Symbol</strong> oben im Board kann der Tutor das Aging pausieren, zum Beispiel während Ferien, Prüfungsphasen oder Projektunterbrechungen. Während der Pause altern Karten nicht weiter. Beim Fortsetzen rechnet EDUBAN die Pausenzeit heraus, damit die Warnungen fair bleiben.</p>
+
+    <div class="help-info">
+      <div class="help-info-title">Nur der Tutor steuert diese Regeln</div>
+      <p style="margin-top:4px; margin-bottom:0;">Schülerinnen und Schüler können Fälligkeitsdaten an Karten setzen, aber Projekt-Deadline, Aging-Limit und Aging-Pause sind Tutor-Funktionen. So bleiben die übergeordneten Zeitregeln für alle Teams einheitlich.</p>
+    </div>
+  </div>
+
+  <!-- BENOTUNG -->
+  <div id="ch-benotung" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="check-circle" style="width:24px;height:24px;"></i> Benotung (Prozess &amp; Ergebnis)</span></div>
+    <p>Das Benotungssystem folgt dem Prinzip <strong style="color:var(--text);">50 % Prozess + 50 % Projektergebnis</strong>. Öffne den Werkzeugkasten (<i data-lucide="wrench" style="width:13px;height:13px;vertical-align:-2px;"></i>) neben einem Board:</p>
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Prozessnote</strong></p>
+    <p>Jede abgeschlossene Aufgabe in der „Fertig"-Spalte kann einzeln benotet werden (Note 1–6). Zusätzlich vergibst du eine <strong style="color:var(--text);">Aufwands-Gewichtung</strong> (1x, 2x, 4x, 8x, 16x), die bestimmt, wie stark diese Karte in die Prozessnote einfließt. Das System berechnet automatisch den <strong>prozentualen Anteil</strong> der Person am Gesamtprojekt.</p>
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Ergebnisnote</strong></p>
+    <p>Unter den Prozesskarten jedes Projektmitglieds gibt es ein eigenes Feld für die Bewertung des Projektergebnisses, zum Beispiel Endprodukt, Präsentation oder Abschlussleistung – mit optionalem Kommentar.</p>
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Endnote</strong></p>
+    <p>Die App ordnet die Aufgaben nach Projektmitgliedern. Direkt unter den Karten folgt die Ergebnisnote, darunter berechnet die App automatisch die Endnote: 50 % Prozessnote und 50 % Ergebnisnote.</p>
+    <div class="help-info">
+      <div class="help-info-title">Noten bleiben beim Tutor</div>
+      <p style="margin-top:4px; margin-bottom:0;">Noten werden lokal im Tutor-Browser gespeichert und können zusätzlich als verschlüsselte Noten-Sicherung exportiert werden. Schüler-Images enthalten keine Noten. Beim erneuten Import einer Abgabe derselben Gruppe bleiben deine Prozess- und Ergebnisnoten erhalten (nach Bestätigung der Rückfrage).</p>
+    </div>
+  </div>
+
+  <!-- NOTEN EXPORTIEREN -->
+  <div id="ch-noten-export" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="printer" style="width:24px;height:24px;"></i> Noten exportieren &amp; Gutachten</span></div>
+    <p>Im Werkzeugkasten findest du zwei Dokumentationsfunktionen:</p>
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Noten exportieren</strong></p>
+    <p>Kopiert eine vollständige Notenübersicht in die Zwischenablage – nach Projektmitgliedern geordnet, mit allen Prozesskarten, Aufwandswerten, Kommentaren, Ergebnisnote und berechneter Endnote. Direkt in ein Dokument, eine E-Mail oder eine Tabelle einfügbar.</p>
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Gutachten-Prompt erzeugen</strong></p>
+    <p>Pro Mitglied gibt es einen Button, der einen fertigen Prompt für ein KI-System (ChatGPT, Claude, Gemini) erzeugt. Das KI-System wird angewiesen, ein sachliches, wertschätzendes Gutachten von 8–12 Sätzen zu verfassen – passend für einen Projektbericht oder ein Zeugnis.</p>
+  </div>
+
+  <!-- NOTEN SICHERN -->
+  <div id="ch-noten-sicherung" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="shield-check" style="width:24px;height:24px;"></i> Noten sichern &amp; wiederherstellen</span></div>
+    <p>Bewertungen sind sensible Tutor-Daten. Deshalb werden sie getrennt vom Schüler-Image gesichert. Öffne die <strong style="color:var(--text);">Dateiverwaltung</strong> in der Seitenleiste und nutze dort den Bereich <strong style="color:var(--text);">Noten-Sicherung</strong>.</p>
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Noten sichern</strong></p>
+    <p>Erstellt eine eigene verschlüsselte Datei mit Prozessnoten, Aufwandswerten, Bewertungskommentaren und Ergebnisnoten – passwortfrei mit deinem Tutor-Schlüssel verschlüsselt. Diese Datei ist nur für den Tutor bestimmt und sollte sicher abgelegt werden, zum Beispiel in einem geschützten Ordner oder auf einem verschlüsselten Datenträger.</p>
+    <p style="margin-top:10px;"><strong style="color:var(--text);">Noten wiederherstellen</strong></p>
+    <p>Lädt eine vorher erstellte Noten-Sicherung und ordnet die Bewertungen wieder den passenden Karten zu. Die Zuordnung erfolgt über die internen Karten-IDs. Das bedeutet: Solange die Karten aus demselben Projektstand stammen und nicht völlig neu erzeugt wurden, können die Noten wieder auf das Board gelegt werden.</p>
+    <div class="help-tip">
+      <div class="help-tip-title">Empfohlener Ablauf</div>
+      <p style="margin-top:4px; margin-bottom:0;">Sichere Noten regelmäßig, besonders nach Bewertungsrunden und bevor du Browserdaten löschst, den Rechner wechselst oder ein Schüler-Image importierst. Die normale Board-Sicherung ersetzt diese Noten-Sicherung nicht.</p>
+    </div>
+  </div>
+
+  <!-- RÜCKGABE -->
+  <div id="ch-rueckgabe" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="send" style="width:24px;height:24px;"></i> Image zurückgeben</span></div>
+    <p>Nachdem du ein Image einer Schülerin oder eines Schülers importiert, bearbeitet und benotet hast, kannst du es zurückgeben:</p>
+    <ol style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li>Klicke in der Seitenleiste auf <strong style="color:var(--text);">„📤 An SchülerIn zurückgeben"</strong></li>
+      <li>Speichere die erzeugte Datei</li>
+      <li>Gib die Datei an die Schülerin oder den Schüler zurück</li>
+    </ol>
+    <p style="margin-top:8px;">Die Schülerin oder der Schüler importiert die Datei über <strong style="color:var(--text);">„Importieren (.json)"</strong> – sie wird automatisch mit der eigenen Schüler-INI geöffnet. Kein Passwort nötig.</p>
+    <p style="margin-top:8px;">Die Rückgabe-Datei enthält Board-Änderungen und Feedback-Kommentare, aber <strong style="color:var(--text);">keine Noten</strong>. Bewertungen bleiben im Tutor-Bereich und sollten separat über <strong style="color:var(--text);">„Noten sichern"</strong> gesichert werden.</p>
+    <div class="help-info">
+      <div class="help-info-title">Wie funktioniert das?</div>
+      <p style="margin-top:4px; margin-bottom:0;">Die zurückgegebene Datei enthält denselben verschlüsselten Datenschlüssel wie das Original – nur die Board-Inhalte wurden aktualisiert. Die Schülerin oder der Schüler entschlüsselt automatisch mit dem Geheimnis der eigenen Schüler-INI, genauso wie beim Original-Export.</p>
+    </div>
+  </div>
+
+  <!-- HINTERGRUNDBILDER -->
+  <div id="ch-hintergrundbilder" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="image" style="width:24px;height:24px;"></i> Hintergrundbilder verwalten</span></div>
+    <p>Die Hintergrundbilder müssen als <code>H1.png</code>, <code>H2.png</code> usw. im Ordner <code>images/</code> liegen. Die App zeigt automatisch Thumbnails für alle verfügbaren Bilder an. So können schulspezifische oder themenbezogene Hintergründe bereitgestellt werden.</p>
+  </div>
+
+  <!-- DATENSCHUTZ -->
+  <div id="ch-datenschutz" class="help-section" style="scroll-margin-top: 20px;">
+    <div class="help-heading"><span style="display:flex;align-items:center;gap:10px;"><i data-lucide="lock" style="width:24px;height:24px;"></i> Datenschutz, Sicherung &amp; Verschlüsselung</span></div>
+    <p>EDUBAN Standalone speichert Daten zuerst <strong style="color:var(--text);">lokal im Browser</strong> des jeweiligen Geräts. Zusätzlich kann die Datenbank-Funktion genutzt werden. Schülerabgaben und Rückgaben werden dabei als verschlüsselte EDUBAN-Images mit pseudonymen Kennungen gespeichert. Eine Ausnahme sind bewusst freigegebene Board-Vorlagen: Sie sind offen lesbare Startboards, enthalten aber keine Tutor-Noten und keine Schülerabgabe.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">Lokaler Speicher</strong></p>
+    <p>Boards, Karten, Einstellungen und Tutor-Bewertungen liegen im Browser-Speicher des jeweiligen Geräts. Dieser Speicher ist bequem, aber nicht als alleinige Langzeit-Sicherung gedacht: Wenn Browserdaten gelöscht werden, das Gerät verloren geht oder ein anderer Browser genutzt wird, sind die lokalen Daten dort nicht automatisch vorhanden. Die App erinnert deshalb automatisch an eine Datei-Sicherung, wenn die letzte länger als 7 Tage zurückliegt – und warnt deutlich, falls der Browser-Speicher voll ist.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">Verschlüsselte Images</strong></p>
+    <p>Images sind verschlüsselte JSON-Dateien. Bei Schüler-Images wird ein zufälliger Datenschlüssel erzeugt. Dieser Datenschlüssel wird doppelt geschützt: einmal mit dem Geheimnis aus der persönlichen Schüler-INI und einmal mit dem öffentlichen Schlüssel des Tutors. Dadurch können sowohl die Schülerin oder der Schüler als auch der Tutor dieselbe Datei öffnen, aber nur mit den jeweils passenden Zugangsdaten.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">Datenbank-Funktion</strong></p>
+    <p>Die Datenbank speichert nur verschlüsselte Pakete. Zuordnung und Anzeige erfolgen über technische Kennungen: eine Tutor-Kennung aus dem öffentlichen INI-Schlüssel und eine zufällige Schüler-Kennung auf dem Gerät. Ein Schülername kann als Anzeigehilfe mitgespeichert werden, ist aber für die Verschlüsselung nicht nötig. Firestore-Regeln sollen zusätzlich erzwingen, dass nur verschlüsselte Pakete in die Datenbank geschrieben werden.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">Offene Vorlagen in der Datenbank</strong></p>
+    <p>Vorlagen liegen getrennt von Schüler-Images in einem eigenen Datenbankbereich. Sie sind nicht verschlüsselt, damit jede Schülerin und jeder Schüler mit der passenden Tutor-INI sie direkt laden kann. Nutze Vorlagen deshalb nur für neutrale Startboards, Beispielkarten, Spalten, Ideen und Zeitplanung – nicht für Bewertungen oder vertrauliche Schülerdaten.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">Tutor-INI</strong></p>
+    <p>Der Tutor besitzt zwei Dateien: Die <strong style="color:var(--text);">Verteil-INI</strong> enthält nur den öffentlichen Schlüssel und darf frei an die Klasse gehen. Der <strong style="color:var(--text);">private Tutor-Schlüssel</strong> enthält den privaten Schlüssel im Klartext – die Datei selbst ist der Zugang (kein Passwort). Sie muss deshalb wie ein Schlüsselbund behandelt werden: sicher aufbewahren, nicht weitergeben. Die App weist sie bei der Schüler-Registrierung automatisch ab.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">Was Schülerinnen und Schüler nicht erhalten</strong></p>
+    <p>Schüler-Images und Rückgabe-Dateien enthalten keine Tutor-Noten. Prozessnoten, Aufwandswerte, Bewertungskommentare und Ergebnisnoten bleiben im Tutor-Modus. Für diese sensiblen Daten gibt es die separate, verschlüsselte <strong style="color:var(--text);">Noten-Sicherung</strong>.</p>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">Sicherungsstrategie</strong></p>
+    <ul style="margin:8px 0 0 18px; display:flex; flex-direction:column; gap:4px;">
+      <li><strong style="color:var(--text);">Schülerinnen und Schüler:</strong> regelmäßig ein Image exportieren, besonders vor Gerätewechsel oder Abmeldung.</li>
+      <li><strong style="color:var(--text);">Tutoren:</strong> Schüler-Images getrennt von eigenen Noten-Sicherungen aufbewahren.</li>
+      <li><strong style="color:var(--text);">Noten:</strong> nach Bewertungsrunden zusätzlich über <strong style="color:var(--text);">„Noten sichern"</strong> exportieren.</li>
+      <li><strong style="color:var(--text);">Tutor-Schlüssel &amp; Schüler-INI:</strong> sicher sichern (Kopie auf USB-Stick); ohne den privaten Tutor-Schlüssel können Abgaben nicht mehr geöffnet werden, ohne die Schüler-INI ist keine Anmeldung möglich.</li>
+    </ul>
+
+    <p style="margin-top:12px;"><strong style="color:var(--text);">Beim Abmelden</strong></p>
+    <p>Beim Abmelden werden lokale App-Daten von diesem Gerät gelöscht. Vorher sollten Schülerinnen und Schüler ein Image exportieren. Tutoren sollten zusätzlich eine Noten-Sicherung erstellen, falls Bewertungen vorhanden sind.</p>
+  </div>
+
+  <a href="#toc-top" class="back-to-top" title="Zum Inhaltsverzeichnis">
+    <i data-lucide="arrow-up" style="width:24px;height:24px;"></i>
+  </a>
+  <div style="clear:both;"></div>
+
+</div>
+<div class="modal-actions">
+  <button class="btn-sm btn-sm-primary" onclick="closeModal('modal-help')">Verstanden ✓</button>
+</div>

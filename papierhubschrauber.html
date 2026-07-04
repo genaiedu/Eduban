@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Papierhubschrauber - Physik EF</title>
+  <meta name="description" content="Papierhubschrauber mit Stoppuhr, Phasen-Timer, Checkliste und EDUBAN-Board">
+  <style>
+  @font-face {
+    font-family: "DM Sans";
+    src: url("fonts/dm-sans-v17-latin-regular.woff2") format("woff2");
+    font-weight: 400;
+    font-display: swap
+  }
+
+  @font-face {
+    font-family: "DM Sans";
+    src: url("fonts/dm-sans-v17-latin-600.woff2") format("woff2");
+    font-weight: 600;
+    font-display: swap
+  }
+
+  @font-face {
+    font-family: "DM Sans";
+    src: url("fonts/dm-sans-v17-latin-700.woff2") format("woff2");
+    font-weight: 700;
+    font-display: swap
+  }
+
+  @font-face {
+    font-family: "Outfit";
+    src: url("fonts/outfit-v15-latin-regular.woff2") format("woff2");
+    font-weight: 400;
+    font-display: swap
+  }
+
+  @font-face {
+    font-family: "Outfit";
+    src: url("fonts/outfit-v15-latin-700.woff2") format("woff2");
+    font-weight: 700;
+    font-display: swap
+  }
+
+  @font-face {
+    font-family: "Outfit";
+    src: url("fonts/outfit-v15-latin-900.woff2") format("woff2");
+    font-weight: 900;
+    font-display: swap
+  }
+
+  @font-face {
+    font-family: "Caveat";
+    src: url("fonts/caveat-v23-latin-regular.woff2") format("woff2");
+    font-weight: 400;
+    font-display: swap
+  }
+
+  :root {
+    --primary: #15803d;
+    --accent: #84cc16;
+    --danger: #dc2626;
+    --success: #16a34a;
+    --purple: #22c55e;
+    --text: #17251c;
+    --muted: #5f7165;
+    --surface: rgba(255,255,255,.76);
+    --glass: rgba(255,255,255,.18);
+    --border: rgba(255,255,255,.34);
+    --shadow: 0 16px 48px rgba(15, 42, 23, .14);
+    --radius: 16px;
+    --side: 292px;
+  }
+
+  body.dark {
+    --primary: #4ade80;
+    --accent: #bef264;
+    --text: #e7f5ea;
+    --muted: #a7b9ab;
+    --surface: rgba(9, 31, 18, .84);
+    --glass: rgba(255,255,255,.07);
+    --border: rgba(255,255,255,.13);
+  }
+
+  * { box-sizing: border-box }
+  html { scroll-behavior: smooth }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "DM Sans", system-ui, sans-serif;
+    background: #cfe8d6;
+    color: var(--text);
+    overflow-x: hidden
+  }
+
+  body.dark { background: #07150d }
+  button, input, select { font: inherit }
+
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(86px);
+    opacity: .3;
+    pointer-events: none;
+    z-index: 0
+  }
+
+  .b1 {
+    width: 520px;
+    height: 520px;
+    background: var(--primary);
+    top: -160px;
+    left: -150px
+  }
+
+  .b2 {
+    width: 420px;
+    height: 420px;
+    background: var(--purple);
+    right: -120px;
+    top: 36vh
+  }
+
+  .b3 {
+    width: 340px;
+    height: 340px;
+    background: #65a30d;
+    bottom: -120px;
+    left: 32vw
+  }
+
+  #progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    z-index: 200
+  }
+
+  .layout {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    min-height: 100vh
+  }
+
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: var(--side);
+    padding: 24px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: var(--glass);
+    border-right: 1px solid var(--border);
+    backdrop-filter: blur(22px);
+    z-index: 100;
+    overflow: auto
+  }
+
+  .brand {
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px
+  }
+
+  .brand .school {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted)
+  }
+
+  .brand .course {
+    display: block;
+    margin-top: 3px;
+    font-family: "Outfit";
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--primary)
+  }
+
+  .brand .sub {
+    display: block;
+    font-family: "Caveat";
+    font-size: 16px;
+    color: var(--muted)
+  }
+
+  .nav-lbl {
+    padding: 9px 8px 3px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted)
+  }
+
+  .nav-link, .tab-btn {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    transition: .18s
+  }
+
+  .nav-link {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    text-align: left;
+    font-size: 13px
+  }
+
+  .nav-link:hover, .nav-link.active {
+    background: var(--glass);
+    color: var(--primary)
+  }
+
+  .nav-link.active { box-shadow: inset 3px 0 0 var(--primary) }
+  .nav-link i, .tab-btn i { width: 15px; height: 15px }
+
+  .dark-btn {
+    margin-top: auto;
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    cursor: pointer
+  }
+
+  .main {
+    margin-left: var(--side);
+    width: calc(100% - var(--side));
+    min-width: 0
+  }
+
+  .subnav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    gap: 4px;
+    overflow: auto;
+    padding: 9px 22px;
+    background: var(--glass);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(22px)
+  }
+
+  .tab-btn {
+    padding: 9px 15px;
+    border-radius: 10px;
+    white-space: nowrap;
+    font-size: 13px
+  }
+
+  .tab-btn:hover {
+    background: var(--glass);
+    color: var(--primary)
+  }
+
+  .tab-btn.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(21,128,61,.24)
+  }
+
+  .panel {
+    display: none;
+    padding: 30px 30px 64px
+  }
+
+  .panel.active {
+    display: block;
+    animation: fade .28s ease
+  }
+
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(8px) }
+    to { opacity: 1; transform: none }
+  }
+
+  .hero, .card, .sw-wrap, .table-wrap, .phase-display, .rank-box {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(22px);
+    box-shadow: var(--shadow)
+  }
+
+  .hero {
+    padding: 34px;
+    margin-bottom: 24px
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 7px
+  }
+
+  h1 {
+    font-family: "Outfit";
+    font-size: 34px;
+    line-height: 1.08;
+    margin: 10px 0 8px
+  }
+
+  .lead {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 850px
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted)
+  }
+
+  .chip i { width: 13px; height: 13px }
+
+  .sec {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 24px 0 14px;
+    padding-bottom: 9px;
+    border-bottom: 2px solid var(--primary);
+    font-family: "Outfit";
+    font-size: 19px;
+    font-weight: 900
+  }
+
+  .sec i {
+    width: 20px;
+    height: 20px;
+    color: var(--primary)
+  }
+
+  .grid2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 14px
+  }
+
+  .card { padding: 18px }
+
+  .card p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.65;
+    font-size: 14px
+  }
+
+  .score-head {
+    margin: -18px -18px 12px;
+    padding: 11px 14px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    background: linear-gradient(135deg, #15803d, #65a30d);
+    color: #fff;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px
+  }
+
+  .row:last-child { border-bottom: 0 }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800
+  }
+
+  .phases {
+    display: flex;
+    flex-direction: column;
+    gap: 9px
+  }
+
+  .phase-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--primary);
+    border-radius: 12px;
+    background: var(--glass)
+  }
+
+  .phase-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-weight: 900
+  }
+
+  .phase-name { flex: 1; font-weight: 800 }
+
+  .phys {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 12px
+  }
+
+  .phys h3 {
+    margin: 0 0 6px;
+    color: var(--primary);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px
+  }
+
+  .phys h3 i { width: 14px; height: 14px }
+
+  .template-note {
+    margin-top: 14px;
+    padding: 16px 18px;
+    border: 1px solid rgba(21,128,61,.28);
+    border-left: 5px solid var(--primary);
+    border-radius: 12px;
+    background: rgba(21,128,61,.08);
+    color: var(--text)
+  }
+
+  .template-note strong { color: var(--primary) }
+
+  .template-note p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.65
+  }
+
+  .kanban-board {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px
+  }
+
+  .kanban-group {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    backdrop-filter: blur(22px)
+  }
+
+  .kanban-group h3 {
+    margin: 0 0 4px;
+    font-family: "Outfit";
+    font-size: 18px;
+    color: var(--text)
+  }
+
+  .kanban-group > p {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.55
+  }
+
+  .kanban-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 12px
+  }
+
+  .k-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px
+  }
+
+  .k-head {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    gap: 10px;
+    align-items: start;
+    margin-bottom: 8px
+  }
+
+  .k-label {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(21,128,61,.12);
+    border: 1px solid rgba(21,128,61,.28);
+    color: var(--primary);
+    font-weight: 900
+  }
+
+  .k-card h4 {
+    margin: 0 0 6px;
+    font-size: 14px;
+    line-height: 1.28;
+    color: var(--text)
+  }
+
+  .k-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px
+  }
+
+  .k-meta span {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--glass);
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700
+  }
+
+  .k-meta .high {
+    background: rgba(220,38,38,.1);
+    border-color: rgba(220,38,38,.28);
+    color: #991b1b
+  }
+
+  .k-meta .mid {
+    background: rgba(132,204,22,.12);
+    border-color: rgba(132,204,22,.32);
+    color: #365314
+  }
+
+  .k-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.55
+  }
+
+  .sw-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 30px 18px
+  }
+
+  .sw-circle {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 6px solid var(--primary);
+    background: var(--surface);
+    transition: .25s
+  }
+
+  .sw-circle.sa {
+    border-color: #dc2626;
+    background: #fff5f5;
+    box-shadow: 0 0 32px #dc262633
+  }
+
+  .sw-circle.sb {
+    border-color: #ca8a04;
+    background: #fefce8;
+    box-shadow: 0 0 32px #ca8a0433
+  }
+
+  .sw-circle.sc {
+    border-color: #16a34a;
+    background: #f0fdf4;
+    box-shadow: 0 0 32px #16a34a33
+  }
+
+  body.dark .sw-circle { background: var(--surface) }
+
+  .sw-time {
+    font-family: "Outfit";
+    font-size: 54px;
+    font-weight: 900;
+    letter-spacing: 0;
+    line-height: 1;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums
+  }
+
+  .sw-circle.sa .sw-time { color:#dc2626 }
+  .sw-circle.sb .sw-time { color:#ca8a04 }
+  .sw-circle.sc .sw-time { color:#16a34a }
+
+  .sw-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 5px
+  }
+
+  .sw-badge {
+    opacity: 0;
+    margin-top: 10px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    transition: .2s
+  }
+
+  .sw-badge.show { opacity: 1 }
+
+  .seg-bar { width: 100%; max-width: 380px }
+
+  .seg-track {
+    display: flex;
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 6px
+  }
+
+  .seg { flex: 1; transition:.2s }
+  .seg.dim { filter: opacity(.22) }
+
+  .seg-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 800
+  }
+
+  .btns {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 11px
+  }
+
+  .btn {
+    border: 0;
+    border-radius: 11px;
+    padding: 13px 24px;
+    font-weight: 900;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: .16s
+  }
+
+  .btn:active { transform: scale(.97) }
+  .btn i { width: 16px; height:16px }
+
+  .go { background: var(--success) }
+  .stop { background: var(--danger) }
+
+  .reset {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    color: var(--text)
+  }
+
+  .target-box {
+    display: none;
+    width: 100%;
+    max-width: 390px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--glass)
+  }
+
+  .target-head {
+    padding: 10px 14px;
+    background: linear-gradient(135deg, #15803d, #65a30d);
+    color: #fff;
+    font-weight: 800;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 13px
+  }
+
+  .target-btn {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 14px;
+    cursor: pointer
+  }
+
+  .target-btn:last-child { border-bottom:0 }
+
+  .target-btn:hover, .target-btn.sel {
+    background: rgba(21,128,61,.1);
+    color: var(--primary);
+    font-weight: 800
+  }
+
+  .result {
+    display: none;
+    text-align: center;
+    padding: 17px 34px;
+    border-radius: 17px;
+    background: linear-gradient(135deg, #15803d, #65a30d);
+    color: #fff
+  }
+
+  .result .score {
+    font-family: "Outfit";
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 1
+  }
+
+  .phase-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(140px,1fr));
+    gap: 10px;
+    margin-bottom: 16px
+  }
+
+  .phase-button {
+    text-align: left;
+    cursor: pointer;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--glass);
+    color: var(--text);
+    padding: 12px;
+    font-weight: 700
+  }
+
+  .phase-button small {
+    display: block;
+    color: var(--muted);
+    font-weight: 700
+  }
+
+  .phase-display {
+    display: none;
+    text-align: center;
+    padding: 26px
+  }
+
+  .pd-name { font-weight: 800; margin-bottom:8px }
+
+  .pd-time {
+    font-family: "Outfit";
+    font-size: 60px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums
+  }
+
+  .warn {
+    display: none;
+    margin-top: 8px;
+    color: var(--danger);
+    font-weight:900
+  }
+
+  .done-msg {
+    display: none;
+    margin-top: 8px;
+    color: var(--success);
+    font-weight: 900
+  }
+
+  .check-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    color: var(--muted);
+    font-size: 13px
+  }
+
+  .progress {
+    width: 150px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--border);
+    overflow:hidden
+  }
+
+  .bar {
+    height: 100%;
+    width: 0;
+    background: var(--success);
+    transition: .2s
+  }
+
+  .checks {
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+  }
+
+  .check {
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--glass);
+    cursor: pointer
+  }
+
+  .box {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 7px;
+    display: grid;
+    place-items: center;
+    flex:0 0 auto
+  }
+
+  .box i {
+    width: 13px;
+    height: 13px;
+    color: #fff;
+    opacity: 0
+  }
+
+  .check.done {
+    background: rgba(22,163,74,.08);
+    border-color:rgba(22,163,74,.34)
+  }
+
+  .check.done .box {
+    background: var(--success);
+    border-color:var(--success)
+  }
+
+  .check.done .box i { opacity:1 }
+
+  .check.done .txt {
+    text-decoration: line-through;
+    color: var(--success)
+  }
+
+  .table-wrap { overflow: auto }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px
+  }
+
+  th {
+    background: linear-gradient(135deg, #15803d, #16a34a);
+    color: #fff;
+    text-align: left;
+    padding: 10px;
+    white-space: nowrap
+  }
+
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border)
+  }
+
+  tr:nth-child(even) td { background: var(--glass) }
+
+  .ci {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 8px;
+    background: var(--glass);
+    color: var(--text);
+    max-width: 100%
+  }
+
+  .rank-box {
+    display: none;
+    margin-top: 16px;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, #15803d, #65a30d);
+    color: #fff
+  }
+
+  .rank-box h3 {
+    margin: 0 0 10px;
+    font-family: "Outfit";
+    display: flex;
+    gap: 8px;
+    align-items:center
+  }
+
+  .rank-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,.18)
+  }
+
+  .download-row {
+    margin-top: 14px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap
+  }
+
+  .small-link {
+    border: 1px solid var(--border);
+    background: var(--glass);
+    color: var(--primary);
+    border-radius: 999px;
+    padding: 9px 14px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center
+  }
+
+  .imprint {
+    margin: 22px 30px 34px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.55
+  }
+
+  .imprint details { max-width: 760px }
+
+  .imprint summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--muted)
+  }
+
+  .imprint summary:hover { color: var(--primary) }
+
+  .imprint h2 {
+    margin: 12px 0 8px;
+    font-family: "Outfit";
+    font-size: 15px;
+    color: var(--text)
+  }
+
+  .imprint h3 {
+    margin: 12px 0 4px;
+    font-size: 12px;
+    color: var(--text)
+  }
+
+  .imprint p { margin: 0 0 8px }
+
+  .hamb {
+    display: none;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 150;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 8px
+  }
+
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.38);
+    z-index: 90
+  }
+
+  @media (max-width: 900px) {
+    .hamb { display:flex }
+    .sidebar {
+      transform: translateX(-100%);
+      transition:.22s
+    }
+
+    .sidebar.open {
+      transform: none;
+      box-shadow:8px 0 40px rgba(0,0,0,.25)
+    }
+
+    .overlay.show { display: block }
+
+    .main {
+      margin-left: 0;
+      width:100%
+    }
+
+    .panel { padding:18px 14px 52px }
+
+    .subnav { padding:8px 10px 8px 56px }
+
+    .grid2, .phys, .kanban-cards { grid-template-columns:1fr }
+
+    .phase-buttons { grid-template-columns:1fr 1fr }
+
+    h1 { font-size: 27px }
+
+    .imprint { margin: 18px 14px 28px }
+  }
+
+  @media (max-width: 560px) {
+    .phase-buttons { grid-template-columns:1fr }
+
+    .sw-circle {
+      width: 198px;
+      height:198px
+    }
+
+    .sw-time { font-size: 48px }
+  }
+  </style>
+</head>
+<body>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div id="progress-bar"></div>
+  <button class="hamb" onclick="toggleSidebar()" aria-label="Menue">
+    <i data-lucide="menu"></i>
+  </button>
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <span class="school">Gymnasium Thomaeum Kempen</span>
+        <span class="course">Papierhubschrauber</span>
+        <span class="sub">Agiles Projektmanagement mit EDUBAN</span>
+      </div>
+      <span class="nav-lbl">Navigation</span>
+      <button class="nav-link active" onclick="showTab('info',this)">
+        <i data-lucide="info"></i>
+        Info & Wertung
+      </button>
+      <button class="nav-link" onclick="showTab('uhr',this)">
+        <i data-lucide="timer"></i>
+        Stoppuhr
+      </button>
+      <button class="nav-link" onclick="showTab('phasen',this)">
+        <i data-lucide="clock"></i>
+        Phasen-Timer
+      </button>
+      <button class="nav-link" onclick="showTab('aufgaben',this)">
+        <i data-lucide="check-square"></i>
+        EDUBAN-Aufgaben
+      </button>
+      <button class="nav-link" onclick="showTab('ergebnis',this)">
+        <i data-lucide="trophy"></i>
+        Ergebnis
+      </button>
+      <button class="dark-btn" onclick="toggleDark()">
+        <i data-lucide="moon" id="dark-icon"></i>
+        <span id="dark-label">Dark Mode</span>
+      </button>
+    </aside>
+
+    <main class="main">
+      <nav class="subnav">
+        <button class="tab-btn active" id="tb-info" onclick="showTab('info')">
+          <i data-lucide="info"></i>
+          Info
+        </button>
+        <button class="tab-btn" id="tb-uhr" onclick="showTab('uhr')">
+          <i data-lucide="timer"></i>
+          Stoppuhr
+        </button>
+        <button class="tab-btn" id="tb-phasen" onclick="showTab('phasen')">
+          <i data-lucide="clock"></i>
+          Phasen
+        </button>
+        <button class="tab-btn" id="tb-aufgaben" onclick="showTab('aufgaben')">
+          <i data-lucide="check-square"></i>
+          Aufgaben
+        </button>
+        <button class="tab-btn" id="tb-ergebnis" onclick="showTab('ergebnis')">
+          <i data-lucide="trophy"></i>
+          Ergebnis
+        </button>
+      </nav>
+
+      <section id="p-info" class="panel active">
+        <div class="hero">
+          <div class="eyebrow">
+            <i data-lucide="wind"></i>
+            Doppelstunde · Dreiergruppen · Physik EF
+          </div>
+          <h1>Der beste Papierhubschrauber</h1>
+          <p class="lead">Baut einen Papierhubschrauber, der aus gleicher Höhe möglichst lange und möglichst stabil fällt. Eure Arbeit organisiert ihr mit EDUBAN als Kanban-Board.</p>
+          <div class="chips">
+            <span class="chip"><i data-lucide="clock"></i> 90 Minuten</span>
+            <span class="chip"><i data-lucide="users"></i> Dreiergruppen</span>
+            <span class="chip"><i data-lucide="timer"></i> Fallzeit = Hauptkriterium</span>
+            <span class="chip"><i data-lucide="rotate-cw"></i> Stabilität = Bonus</span>
+          </div>
+        </div>
+
+        <div class="sec">
+          <i data-lucide="star"></i>
+          Wertungssystem
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <div class="score-head">
+              <i data-lucide="timer"></i>
+              Fallzeit - Hauptkriterium
+            </div>
+            <div class="row">
+              <span><strong style="color:#dc2626">Stufe A</strong> unter 2 s</span>
+              <span class="badge" style="background:#dc2626;color:#fff">1 Punkt</span>
+            </div>
+            <div class="row">
+              <span><strong style="color:#ca8a04">Stufe B</strong> 2 bis 3 s</span>
+              <span class="badge" style="background:#ca8a04;color:#fff">3 Punkte</span>
+            </div>
+            <div class="row">
+              <span><strong style="color:#16a34a">Stufe C</strong> über 3 s</span>
+              <span class="badge" style="background:#16a34a;color:#fff">6 Punkte</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="score-head">
+              <i data-lucide="rotate-cw"></i>
+              Flugstabilität - Bonus
+            </div>
+            <div class="row">
+              <span>Starkes Trudeln oder Kippen</span>
+              <span class="badge" style="background:rgba(21,128,61,.15);color:#15803d">+0</span>
+            </div>
+            <div class="row">
+              <span>Erkennbar rotierend, aber unruhig</span>
+              <span class="badge" style="background:rgba(21,128,61,.20);color:#15803d">+1</span>
+            </div>
+            <div class="row">
+              <span>Ruhige Rotation bis zur Landung</span>
+              <span class="badge" style="background:rgba(21,128,61,.26);color:#166534">+2</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec">
+          <i data-lucide="calendar"></i>
+          Projektphasen
+        </div>
+        <div class="phases">
+          <div class="phase-item" style="border-left-color:#15803d">
+            <div class="phase-num" style="background:#15803d">1</div>
+            <div class="phase-name">Planungsphase</div>
+            <span class="badge" style="background:rgba(21,128,61,.12);color:#15803d">15 min</span>
+          </div>
+          <div class="phase-item" style="border-left-color:#16a34a">
+            <div class="phase-num" style="background:#16a34a">2</div>
+            <div class="phase-name">Ausprobieren & Optimieren</div>
+            <span class="badge" style="background:rgba(22,163,74,.12);color:#16a34a">25 min</span>
+          </div>
+          <div class="phase-item" style="border-left-color:#65a30d">
+            <div class="phase-num" style="background:#65a30d">3</div>
+            <div class="phase-name">Vorbereitung Wettbewerb</div>
+            <span class="badge" style="background:rgba(101,163,13,.12);color:#65a30d">10 min</span>
+          </div>
+          <div class="phase-item" style="border-left-color:#0f766e">
+            <div class="phase-num" style="background:#0f766e">4</div>
+            <div class="phase-name">Der Wettbewerb</div>
+            <span class="badge" style="background:rgba(15,118,110,.12);color:#0f766e">10 min</span>
+          </div>
+        </div>
+
+        <div class="sec">
+          <i data-lucide="atom"></i>
+          Physikalische Überlegungen
+        </div>
+        <div class="phys">
+          <div class="card">
+            <h3><i data-lucide="rotate-cw"></i> Rotation</h3>
+            <p>Die Flügel erzeugen beim Fallen Luftwiderstand und Drehmoment. Eine gleichmäßige Rotation stabilisiert den Flug.</p>
+          </div>
+          <div class="card">
+            <h3><i data-lucide="wind"></i> Luftwiderstand</h3>
+            <p>Größere oder breitere Flügel können die Sinkgeschwindigkeit verringern. Zu große Flügel können aber instabil werden.</p>
+          </div>
+          <div class="card">
+            <h3><i data-lucide="move-vertical"></i> Schwerpunkt</h3>
+            <p>Eine Büroklammer oder ein kleiner Knick unten kann den Schwerpunkt stabilisieren und starkes Kippen verhindern.</p>
+          </div>
+          <div class="card">
+            <h3><i data-lucide="repeat"></i> Reproduzierbarkeit</h3>
+            <p>Nur Modelle, die wiederholt ähnlich fallen, sind für den Wettbewerb geeignet. Einzelne Glücksflüge zählen nicht als sichere Lösung.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="p-uhr" class="panel">
+        <div class="sec">
+          <i data-lucide="timer"></i>
+          Fallzeit-Messung
+        </div>
+        <p class="lead">Starten beim Loslassen des Papierhubschraubers. Stoppen beim ersten Bodenkontakt. Die Stufe wird automatisch erkannt.</p>
+        <div class="sw-wrap">
+          <div class="sw-circle" id="swc">
+            <div class="sw-time" id="swt">0,00</div>
+            <div class="sw-sub">Sekunden</div>
+            <div class="sw-badge" id="swb"></div>
+          </div>
+          <div class="seg-bar">
+            <div class="seg-track">
+              <div class="seg dim" id="sa" style="background:#dc2626"></div>
+              <div class="seg dim" id="sb" style="background:#ca8a04"></div>
+              <div class="seg dim" id="sc" style="background:#16a34a"></div>
+            </div>
+            <div class="seg-labels">
+              <span style="color:#dc2626">A &lt; 2 s</span>
+              <span style="color:#ca8a04">B 2-3 s</span>
+              <span style="color:#16a34a">C &gt; 3 s</span>
+            </div>
+          </div>
+          <div class="btns" id="swbtns">
+            <button class="btn go" onclick="swStart()">
+              <i data-lucide="play"></i>
+              Starten
+            </button>
+          </div>
+          <div class="target-box" id="trpick">
+            <div class="target-head">
+              <i data-lucide="rotate-cw"></i>
+              Flugstabilität wählen
+            </div>
+            <button class="target-btn" onclick="treff(0,this)">
+              <span>Starkes Trudeln oder Kippen</span>
+              <span class="badge" style="background:rgba(21,128,61,.15);color:#15803d">+0</span>
+            </button>
+            <button class="target-btn" onclick="treff(1,this)">
+              <span>Erkennbar rotierend, aber unruhig</span>
+              <span class="badge" style="background:rgba(21,128,61,.20);color:#15803d">+1</span>
+            </button>
+            <button class="target-btn" onclick="treff(2,this)">
+              <span>Ruhige Rotation bis zur Landung</span>
+              <span class="badge" style="background:rgba(21,128,61,.26);color:#166534">+2</span>
+            </button>
+          </div>
+          <div class="result" id="swres">
+            <div>Gesamtpunkte</div>
+            <div class="score" id="swscore">-</div>
+            <div id="swdet">-</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="p-phasen" class="panel">
+        <div class="sec">
+          <i data-lucide="clock"></i>
+          Phasen-Timer
+        </div>
+        <p class="lead">Phase antippen, um den Timer zu starten. Bei einer Minute Restzeit und beim Ende ertönt ein Signal.</p>
+        <div class="phase-buttons">
+          <button class="phase-button" onclick="phStart(1,'Planungsphase',15,'#15803d',this)">
+            <small>Phase 1</small>
+            Planungsphase
+            <br>
+            <small>15 min</small>
+          </button>
+          <button class="phase-button" onclick="phStart(2,'Ausprobieren & Optimieren',25,'#16a34a',this)">
+            <small>Phase 2</small>
+            Ausprobieren & Optimieren
+            <br>
+            <small>25 min</small>
+          </button>
+          <button class="phase-button" onclick="phStart(3,'Vorbereitung Wettbewerb',10,'#65a30d',this)">
+            <small>Phase 3</small>
+            Vorbereitung Wettbewerb
+            <br>
+            <small>10 min</small>
+          </button>
+          <button class="phase-button" onclick="phStart(4,'Der Wettbewerb',10,'#0f766e',this)">
+            <small>Phase 4</small>
+            Der Wettbewerb
+            <br>
+            <small>10 min</small>
+          </button>
+        </div>
+        <div class="phase-display" id="pd">
+          <div class="pd-name" id="pdn"></div>
+          <div class="pd-time" id="pdt">0:00</div>
+          <div class="warn" id="pdw">
+            <i data-lucide="alert-triangle"></i>
+            Noch 1 Minute!
+          </div>
+          <div class="done-msg" id="pdd">
+            <i data-lucide="check-circle"></i>
+            Phase abgeschlossen!
+          </div>
+          <div class="btns" style="margin-top:14px">
+            <button class="btn stop" id="pd-pause" onclick="phPause()">Pause</button>
+            <button class="btn go" id="pd-weiter" style="display:none" onclick="phWeiter()">Weiter</button>
+          </div>
+        </div>
+        <div class="sec">
+          <i data-lucide="kanban"></i>
+          EDUBAN-Board
+        </div>
+        <div class="template-note">
+          <p>
+            <strong>Auftrag:</strong>
+            Erstellt das Kanban-Board selbst in EDUBAN. Diese Seite gibt bewusst keine Karten vor. Legt gemeinsam sinnvolle Aufgaben, Abhängigkeiten, Verantwortlichkeiten und Meilensteine an, sodass euer Arbeitsprozess zur Entwicklung des Papierhubschraubers sichtbar wird.
+          </p>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <h3 style="margin-top:0;color:var(--primary)">Mögliche Meilensteine</h3>
+            <p>Planung abgeschlossen · Varianten getestet · Modell optimiert · Wettbewerb vorbereitet · Ergebnis ausgewertet</p>
+          </div>
+          <div class="card">
+            <h3 style="margin-top:0;color:var(--primary)">Wichtig für das Board</h3>
+            <p>Keine fertigen Musterkarten übernehmen. Erstellt eigene Karten, die eure tatsächlichen Arbeitsschritte, Messungen und Entscheidungen beschreiben.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="p-aufgaben" class="panel">
+        <div class="sec">
+          <i data-lucide="check-square"></i>
+          EDUBAN-Aufgaben
+        </div>
+        <div class="check-head">
+          <span id="ck-cnt">0 / 8 erledigt</span>
+          <div class="progress">
+            <div class="bar" id="ck-bar"></div>
+          </div>
+        </div>
+        <div class="checks" id="ck-list"></div>
+      </section>
+
+      <section id="p-ergebnis" class="panel">
+        <div class="sec">
+          <i data-lucide="trophy"></i>
+          Wettbewerb-Ergebnis
+        </div>
+        <p class="lead">Fallzeit-Stufe und Flugstabilität eintragen. Die Punkte und Rangliste werden automatisch berechnet.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Gr.</th>
+                <th>Mitglied</th>
+                <th>Zeit</th>
+                <th>Stufe</th>
+                <th>Zeit-Pkte</th>
+                <th>Stabilität</th>
+                <th>Bonus</th>
+                <th>Gesamt</th>
+              </tr>
+            </thead>
+            <tbody id="rtbody"></tbody>
+          </table>
+        </div>
+        <div class="rank-box" id="rankbox">
+          <h3>
+            <i data-lucide="trophy"></i>
+            Rangliste
+          </h3>
+          <div id="rankrows"></div>
+        </div>
+      </section>
+
+      <footer class="imprint">
+        <details>
+          <summary>Impressum</summary>
+          <h2>Impressum</h2>
+          <h3>Angaben gemäß § 5 DDG</h3>
+          <p>
+            <strong>Verantwortlich für den Inhalt</strong><br>
+            Dr. Claus Unterberg<br>
+            Gymnasium Thomaeum Kempen<br>
+            Am Gymnasium 4<br>
+            47906 Kempen
+          </p>
+          <h3>Kontakt</h3>
+          <p>
+            E-Mail:
+            <a href="mailto:claus.unterberg@thomaeum.de">claus.unterberg@thomaeum.de</a>
+          </p>
+          <h3>Verantwortlich im Sinne des § 18 Abs. 2 MStV</h3>
+          <p>Dr. Claus Unterberg, Anschrift wie oben.</p>
+          <h3>Urheberrecht</h3>
+          <p>Die auf dieser Seite veröffentlichten Texte und Grafiken sind urheberrechtlich geschützt. Eine Nutzung im schulischen Kontext ist ausdrücklich erwünscht. Eine darüber hinausgehende Verwendung bedarf der vorherigen Zustimmung.</p>
+        </details>
+      </footer>
+    </main>
+  </div>
+
+  <script src="fonts/lucide.min.js"></script>
+  <script>
+  "use strict";
+
+  function refreshIcons() {
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  function byId(id) {
+    return document.getElementById(id);
+  }
+
+  function p2(n) {
+    return n < 10 ? "0" + n : "" + n;
+  }
+
+  var AC = null;
+  function ac() {
+    if (!AC) {
+      try {
+        AC = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {
+        AC = null;
+      }
+    }
+    if (AC && AC.state === "suspended") AC.resume();
+    return AC;
+  }
+
+  function tone(freq, dur, vol, type) {
+    var c = ac();
+    if (!c) return;
+    var o = c.createOscillator();
+    var g = c.createGain();
+    o.connect(g);
+    g.connect(c.destination);
+    o.frequency.value = freq;
+    o.type = type || "sine";
+    g.gain.setValueAtTime(vol || .35, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001, c.currentTime + dur);
+    o.start();
+    o.stop(c.currentTime + dur);
+  }
+
+  function playA(id) {
+    if (id === "A") tone(440, .16, .32);
+    if (id === "B") {
+      tone(523, .13, .36);
+      setTimeout(function() { tone(659, .2, .36); }, 150);
+    }
+    if (id === "C") {
+      tone(523, .12, .36);
+      setTimeout(function() { tone(659, .12, .38); }, 120);
+      setTimeout(function() { tone(784, .28, .42); }, 240);
+    }
+  }
+
+  function pStart() { tone(880, .08, .45, "square"); }
+  function pLand() { tone(330, .35, .38, "triangle"); }
+  function pWarn() { tone(550, .18, .35); }
+  function pEnd() {
+    tone(880, .12, .45);
+    setTimeout(function() { tone(660, .12, .45); }, 140);
+    setTimeout(function() { tone(440, .3, .45); }, 280);
+  }
+
+  var ST = [
+    { id: "A", p: 1, f: "#dc2626", cl: "sa", tx: "Stufe A" },
+    { id: "B", p: 3, f: "#ca8a04", cl: "sb", tx: "Stufe B" },
+    { id: "C", p: 6, f: "#16a34a", cl: "sc", tx: "Stufe C" }
+  ];
+
+  function gs(sec) {
+    if (sec < 2) return ST[0];
+    if (sec < 3) return ST[1];
+    return ST[2];
+  }
+
+  function toggleDark() {
+    document.body.classList.toggle("dark");
+    var dark = document.body.classList.contains("dark");
+    byId("dark-label").textContent = dark ? "Light Mode" : "Dark Mode";
+    byId("dark-icon").setAttribute("data-lucide", dark ? "sun" : "moon");
+    refreshIcons();
+  }
+
+  function toggleSidebar() {
+    byId("sidebar").classList.toggle("open");
+    byId("overlay").classList.toggle("show");
+  }
+
+  function showTab(id, btn) {
+    document.querySelectorAll(".panel,.tab-btn,.nav-link").forEach(function(el) {
+      el.classList.remove("active");
+    });
+    byId("p-" + id).classList.add("active");
+    byId("tb-" + id).classList.add("active");
+    if (btn) {
+      btn.classList.add("active");
+    } else {
+      document.querySelectorAll(".nav-link").forEach(function(n) {
+        if (n.getAttribute("onclick").indexOf("'" + id + "'") !== -1) n.classList.add("active");
+      });
+    }
+    if (window.innerWidth <= 900) {
+      byId("sidebar").classList.remove("open");
+      byId("overlay").classList.remove("show");
+    }
+    refreshIcons();
+  }
+
+  window.addEventListener("scroll", function() {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    byId("progress-bar").style.width = (h > 0 ? window.scrollY / h * 100 : 0) + "%";
+  });
+
+  var swRunning = false;
+  var swMs = 0;
+  var swIv = null;
+  var swStart0 = 0;
+  var swStufeId = null;
+  var swStufe = null;
+
+  function swSetStufe(s) {
+    byId("swc").className = "sw-circle " + s.cl;
+    byId("swb").textContent = s.tx + " · " + s.p + (s.p === 1 ? " Punkt" : " Punkte");
+    byId("swb").style.background = s.f;
+    byId("swb").classList.add("show");
+    byId("sa").className = "seg" + (s.id === "A" ? "" : " dim");
+    byId("sb").className = "seg" + (s.id === "B" ? "" : " dim");
+    byId("sc").className = "seg" + (s.id === "C" ? "" : " dim");
+  }
+
+  function swStart() {
+    clearInterval(swIv);
+    pStart();
+    swMs = 0;
+    swStart0 = performance.now();
+    swStufeId = null;
+    swStufe = null;
+    swRunning = true;
+    byId("trpick").style.display = "none";
+    byId("swres").style.display = "none";
+    byId("swc").className = "sw-circle";
+    byId("swb").classList.remove("show");
+    byId("swt").textContent = "0,00";
+    byId("sa").className = "seg dim";
+    byId("sb").className = "seg dim";
+    byId("sc").className = "seg dim";
+    byId("swbtns").innerHTML = '<button class="btn stop" onclick="swLand()"><i data-lucide="circle-dot"></i> Gelandet!</button>';
+    refreshIcons();
+    swIv = setInterval(function() {
+      var elapsed = performance.now() - swStart0;
+      swMs = elapsed;
+      var sec = elapsed / 1000;
+      var s = gs(sec);
+      byId("swt").textContent = Math.floor(sec) + "," + p2(Math.floor((elapsed % 1000) / 10));
+      if (s.id !== swStufeId) {
+        swStufeId = s.id;
+        swStufe = s;
+        swSetStufe(s);
+        playA(s.id);
+      }
+    }, 40);
+  }
+
+  function swLand() {
+    if (!swRunning) return;
+    clearInterval(swIv);
+    swRunning = false;
+    pLand();
+    byId("swbtns").innerHTML = '<button class="btn reset" onclick="swReset()"><i data-lucide="rotate-ccw"></i> Reset</button>';
+    byId("trpick").style.display = "block";
+    document.querySelectorAll(".target-btn").forEach(function(b) {
+      b.classList.remove("sel");
+    });
+    refreshIcons();
+  }
+
+  function swReset() {
+    clearInterval(swIv);
+    swRunning = false;
+    swMs = 0;
+    swStufeId = null;
+    swStufe = null;
+    byId("swt").textContent = "0,00";
+    byId("swc").className = "sw-circle";
+    byId("swb").classList.remove("show");
+    byId("sa").className = "seg dim";
+    byId("sb").className = "seg dim";
+    byId("sc").className = "seg dim";
+    byId("trpick").style.display = "none";
+    byId("swres").style.display = "none";
+    byId("swbtns").innerHTML = '<button class="btn go" onclick="swStart()"><i data-lucide="play"></i> Starten</button>';
+    refreshIcons();
+  }
+
+  function treff(pts, btn) {
+    document.querySelectorAll(".target-btn").forEach(function(b) {
+      b.classList.remove("sel");
+    });
+    btn.classList.add("sel");
+    if (swStufe) {
+      byId("swscore").textContent = swStufe.p + pts;
+      byId("swdet").textContent = swStufe.p + " Fallzeit + " + pts + " Stabilität";
+      byId("swres").style.display = "block";
+    }
+  }
+
+  var phIv = null;
+  var phEnd = 0;
+  var phAkt = null;
+  var phPausedSeconds = 0;
+  var warned = false;
+
+  function phStart(id, name, min, color, btn) {
+    clearInterval(phIv);
+    warned = false;
+    phAkt = { id: id, name: name, color: color };
+    phEnd = Date.now() + min * 60000;
+    document.querySelectorAll(".phase-button").forEach(function(b) {
+      b.style.borderColor = "";
+    });
+    btn.style.borderColor = color;
+    byId("pd").style.display = "block";
+    byId("pd").style.borderColor = color;
+    byId("pdn").textContent = "Phase " + id + ": " + name;
+    byId("pdn").style.color = color;
+    byId("pdt").style.color = color;
+    byId("pdw").style.display = "none";
+    byId("pdd").style.display = "none";
+    byId("pd-pause").style.display = "inline-flex";
+    byId("pd-weiter").style.display = "none";
+    pStart();
+    phTick();
+    phIv = setInterval(phTick, 500);
+  }
+
+  function phTick() {
+    var r = Math.max(0, Math.round((phEnd - Date.now()) / 1000));
+    byId("pdt").textContent = Math.floor(r / 60) + ":" + p2(r % 60);
+    if (r <= 60 && !warned && r > 0) {
+      warned = true;
+      byId("pdw").style.display = "block";
+      pWarn();
+    }
+    if (r <= 0) {
+      clearInterval(phIv);
+      byId("pdd").style.display = "block";
+      byId("pd-pause").style.display = "none";
+      byId("pdt").style.color = "#16a34a";
+      pEnd();
+    }
+  }
+
+  function phPause() {
+    clearInterval(phIv);
+    phPausedSeconds = Math.max(0, Math.round((phEnd - Date.now()) / 1000));
+    byId("pd-pause").style.display = "none";
+    byId("pd-weiter").style.display = "inline-flex";
+  }
+
+  function phWeiter() {
+    phEnd = Date.now() + phPausedSeconds * 1000;
+    byId("pd-pause").style.display = "inline-flex";
+    byId("pd-weiter").style.display = "none";
+    phIv = setInterval(phTick, 500);
+  }
+
+  var AUF = [
+    "Board anlegen: Erstellt in EDUBAN ein neues Board für das Projekt Papierhubschrauber.",
+    "Meilensteine festlegen: Einigt euch auf sinnvolle Etappen wie Planung, Testphase, Optimierung, Wettbewerb und Auswertung.",
+    "Eigene Karten schreiben: Formuliert konkrete Arbeitskarten, die echte Aufgaben eurer Gruppe beschreiben.",
+    "Abhängigkeiten prüfen: Achtet darauf, dass Karten logisch miteinander verbunden sind und keine Kreisabhängigkeiten entstehen.",
+    "Verantwortlichkeiten eintragen: Legt fest, wer zunächst für welche Aufgabe zuständig ist.",
+    "WIP-Limit beachten: Bearbeitet nicht zu viele Karten gleichzeitig. Erst abschließen, dann die nächste Aufgabe beginnen.",
+    "Messdaten dokumentieren: Haltet Fallzeiten, Stabilität und Beobachtungen im Board oder in eurer Ergebnistabelle fest.",
+    "Reflexion ergänzen: Beschreibt am Ende kurz, welche Veränderung am Modell am meisten geholfen hat."
+  ];
+
+  var ckDone = AUF.map(function() { return false; });
+
+  function renderCk() {
+    var done = ckDone.filter(Boolean).length;
+    byId("ck-cnt").textContent = done + " / " + AUF.length + " erledigt";
+    byId("ck-bar").style.width = Math.round(done / AUF.length * 100) + "%";
+    byId("ck-list").innerHTML = "";
+    AUF.forEach(function(txt, i) {
+      var el = document.createElement("div");
+      el.className = "check" + (ckDone[i] ? " done" : "");
+      el.onclick = function() {
+        ckDone[i] = !ckDone[i];
+        renderCk();
+      };
+      el.innerHTML = '<div class="box"><i data-lucide="check"></i></div><div class="txt"><strong>' + (i + 1) + '.</strong> ' + txt + '</div>';
+      byId("ck-list").appendChild(el);
+    });
+    refreshIcons();
+  }
+
+  var GR = [];
+  for (var gi = 0; gi < 8; gi++) {
+    GR.push({ m: "", z: "", s: null, t: null });
+  }
+
+  function renderTbl() {
+    byId("rtbody").innerHTML = "";
+    GR.forEach(function(g, i) {
+      var fl = g.s ? ST.find(function(x) { return x.id === g.s; }) : null;
+      var tp = g.t !== null ? +g.t : null;
+      var total = (fl ? fl.p : 0) + (tp !== null ? tp : 0);
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td><strong style="color:var(--primary)">' + (i + 1) + '</strong></td>' +
+        '<td><input class="ci" value="' + g.m + '" placeholder="Name" oninput="GR[' + i + '].m=this.value"></td>' +
+        '<td><input class="ci" value="' + g.z + '" placeholder="2,40" style="width:70px" oninput="GR[' + i + '].z=this.value"></td>' +
+        '<td><select class="ci" onchange="GR[' + i + '].s=this.value||null;renderTbl()"><option value="">-</option>' + ST.map(function(x) {
+          return '<option value="' + x.id + '"' + (g.s === x.id ? " selected" : "") + '>' + x.id + '</option>';
+        }).join("") + '</select></td>' +
+        '<td>' + (fl ? '<span class="badge" style="background:' + fl.f + ';color:#fff">' + fl.p + '</span>' : "-") + '</td>' +
+        '<td><select class="ci" onchange="GR[' + i + '].t=this.value===\'\'?null:+this.value;renderTbl()"><option value="">-</option>' + ["kippt/trudelt", "unruhig", "ruhig"].map(function(l, ti) {
+          return '<option value="' + ti + '"' + (g.t === ti ? " selected" : "") + '>' + l + '</option>';
+        }).join("") + '</select></td>' +
+        '<td>' + (tp !== null ? '<span class="badge" style="background:rgba(21,128,61,.15);color:#15803d">+' + tp + '</span>' : "-") + '</td>' +
+        '<td><strong style="color:var(--primary);font-size:15px">' + (fl && tp !== null ? total : "-") + '</strong></td>';
+      byId("rtbody").appendChild(tr);
+    });
+
+    var list = GR.map(function(g, i) {
+      var fl = g.s ? ST.find(function(x) { return x.id === g.s; }) : null;
+      var tp = g.t !== null ? +g.t : null;
+      return {
+        nr: i + 1,
+        m: g.m,
+        total: (fl ? fl.p : 0) + (tp !== null ? tp : 0),
+        ok: !!fl && tp !== null
+      };
+    }).filter(function(g) {
+      return g.ok;
+    }).sort(function(a, b) {
+      return b.total - a.total;
+    });
+
+    if (!list.length) {
+      byId("rankbox").style.display = "none";
+      return;
+    }
+
+    byId("rankbox").style.display = "block";
+    byId("rankrows").innerHTML = list.map(function(g, r) {
+      var medal = r === 0 ? "1." : r === 1 ? "2." : r === 2 ? "3." : (r + 1) + ".";
+      return '<div class="rank-row"><span>' + medal + ' Gruppe ' + g.nr + (g.m ? " (" + g.m + ")" : "") + '</span><strong>' + g.total + ' Punkte</strong></div>';
+    }).join("");
+  }
+
+  renderCk();
+  renderTbl();
+  refreshIcons();
+  </script>
+</body>
+</html>

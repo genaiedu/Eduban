@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDUBAN Standalone – Nutzerhandbuch</title>
+  <meta name="description" content="Eigenständiges Nutzerhandbuch für EDUBAN Standalone">
+  <style>
+    @font-face { font-family:"DM Sans"; src:url("fonts/dm-sans-v17-latin-regular.woff2") format("woff2"); font-weight:400; font-display:swap; }
+    @font-face { font-family:"DM Sans"; src:url("fonts/dm-sans-v17-latin-600.woff2") format("woff2"); font-weight:600; font-display:swap; }
+    @font-face { font-family:"DM Sans"; src:url("fonts/dm-sans-v17-latin-700.woff2") format("woff2"); font-weight:700; font-display:swap; }
+    @font-face { font-family:"Outfit"; src:url("fonts/outfit-v15-latin-regular.woff2") format("woff2"); font-weight:400; font-display:swap; }
+    @font-face { font-family:"Outfit"; src:url("fonts/outfit-v15-latin-700.woff2") format("woff2"); font-weight:700; font-display:swap; }
+    @font-face { font-family:"Outfit"; src:url("fonts/outfit-v15-latin-900.woff2") format("woff2"); font-weight:900; font-display:swap; }
+    @font-face { font-family:"Caveat"; src:url("fonts/caveat-v23-latin-regular.woff2") format("woff2"); font-weight:400; font-display:swap; }
+
+    :root {
+      --accent:#7c3aed;
+      --accent2:#a855f7;
+      --accent3:#c084fc;
+      --danger:#dc2626;
+      --success:#16a34a;
+      --text:#251633;
+      --text-muted:#725f86;
+      --surface:rgba(255,255,255,.78);
+      --glass:rgba(255,255,255,.22);
+      --border:rgba(255,255,255,.40);
+      --shadow:0 18px 55px rgba(45, 20, 72, .16);
+      --radius:22px;
+    }
+
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      margin:0;
+      min-height:100vh;
+      font-family:"DM Sans", system-ui, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(124,58,237,.24), transparent 34%),
+        radial-gradient(circle at 92% 10%, rgba(192,132,252,.22), transparent 34%),
+        radial-gradient(circle at 74% 88%, rgba(168,85,247,.18), transparent 35%),
+        linear-gradient(135deg, #eee4ff 0%, #f7edff 48%, #eadcff 100%);
+      overflow-x:hidden;
+    }
+
+    a { color:var(--accent); }
+    code { background:rgba(124,58,237,.10); padding:2px 6px; border-radius:6px; color:var(--text); }
+
+    .orb { position:fixed; border-radius:50%; filter:blur(86px); opacity:.30; pointer-events:none; z-index:0; }
+    .orb-1 { width:520px; height:520px; background:#7c3aed; top:-180px; left:-160px; }
+    .orb-2 { width:440px; height:440px; background:#c084fc; right:-140px; top:28vh; }
+    .orb-3 { width:360px; height:360px; background:#a855f7; bottom:-140px; left:35vw; }
+
+    #progress-bar {
+      position:fixed; top:0; left:0; height:3px; width:0;
+      background:linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+      z-index:200;
+    }
+
+    .page {
+      position:relative;
+      z-index:1;
+      width:min(1120px, calc(100% - 34px));
+      margin:0 auto;
+      padding:34px 0 58px;
+    }
+
+    .hero {
+      background:var(--glass);
+      border:1px solid var(--border);
+      border-radius:34px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(24px);
+      padding:clamp(28px, 5vw, 56px);
+      margin-bottom:26px;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .hero:before {
+      content:"";
+      position:absolute;
+      width:420px;
+      height:420px;
+      right:-180px;
+      bottom:-190px;
+      background:radial-gradient(circle, rgba(255,255,255,.58), transparent 64%);
+    }
+
+    .hero-inner {
+      position:relative;
+      display:grid;
+      grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr);
+      gap:28px;
+      align-items:center;
+    }
+
+    .eyebrow {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      color:var(--accent);
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:1.2px;
+      text-transform:uppercase;
+      margin-bottom:12px;
+    }
+
+    .eyebrow i { width:16px; height:16px; }
+
+    h1 {
+      margin:0;
+      font-family:"Outfit";
+      font-size:clamp(40px, 6vw, 72px);
+      line-height:.98;
+      letter-spacing:-.035em;
+    }
+
+    .script {
+      display:block;
+      margin-top:12px;
+      font-family:"Caveat";
+      font-size:clamp(28px, 4vw, 42px);
+      font-weight:400;
+      color:var(--text-muted);
+      letter-spacing:0;
+    }
+
+    .lead {
+      margin:18px 0 0;
+      color:var(--text-muted);
+      font-size:16px;
+      line-height:1.75;
+      max-width:760px;
+    }
+
+    .logo-card {
+      background:#fff;
+      border-radius:34px;
+      min-height:210px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 16px 48px rgba(45,20,72,.18);
+      padding:34px;
+    }
+
+    .logo-card img {
+      width:100%;
+      max-height:160px;
+      object-fit:contain;
+    }
+
+    .logo-fallback {
+      font-family:"Outfit";
+      font-size:44px;
+      font-weight:900;
+      color:var(--accent);
+      letter-spacing:-.04em;
+    }
+
+    .actions {
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:24px;
+    }
+
+    .btn {
+      text-decoration:none;
+      border:0;
+      border-radius:999px;
+      padding:13px 18px;
+      font-weight:900;
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      cursor:pointer;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+
+    .btn:hover { transform:translateY(-2px); }
+    .btn-primary {
+      color:#fff;
+      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow:0 13px 30px rgba(124,58,237,.26);
+    }
+    .btn-ghost {
+      color:var(--text);
+      background:rgba(255,255,255,.52);
+      border:1px solid var(--border);
+    }
+    .btn i { width:17px; height:17px; }
+
+    .help-section {
+      scroll-margin-top:24px;
+      background:var(--glass);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(24px);
+      padding:22px;
+      margin:18px 0;
+      color:var(--text-muted);
+      line-height:1.8;
+      font-size:14px;
+    }
+
+    .help-section p { margin:0 0 10px; }
+    .help-section ul, .help-section ol {
+      margin:8px 0 0 18px;
+      padding:0;
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+    }
+
+    .help-section strong { color:var(--text); }
+
+    .help-heading {
+      margin:0 0 12px;
+      padding-bottom:10px;
+      border-bottom:2px solid rgba(124,58,237,.22);
+      color:var(--text);
+      font-family:"Outfit";
+      font-size:21px;
+      font-weight:900;
+    }
+
+    .help-heading span {
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .help-heading i {
+      width:24px;
+      height:24px;
+      color:var(--accent);
+    }
+
+    .toc {
+      background:rgba(124,58,237,.06);
+      border:1px solid rgba(124,58,237,.16);
+      border-radius:18px;
+      padding:20px;
+      margin-bottom:28px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(24px);
+    }
+
+    .toc-grid {
+      display:flex;
+      flex-wrap:wrap;
+      gap:24px;
+    }
+
+    .toc-col {
+      flex:1;
+      min-width:260px;
+    }
+
+    .toc-title {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:var(--accent);
+      font-weight:800;
+      margin-bottom:12px;
+      padding-bottom:8px;
+      border-bottom:1px solid rgba(124,58,237,.18);
+    }
+
+    .toc-title i { width:16px; height:16px; }
+
+    .toc-links {
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .toc-link {
+      display:flex;
+      align-items:flex-start;
+      text-decoration:none;
+      color:var(--text-muted);
+      padding:7px 10px;
+      border-radius:8px;
+      transition:all .2s ease;
+      line-height:1.4;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .toc-link svg {
+      margin-top:2px;
+      margin-right:6px;
+      flex-shrink:0;
+      opacity:.5;
+      transition:all .2s ease;
+    }
+
+    .toc-link:hover {
+      background:rgba(124,58,237,.10);
+      color:var(--accent);
+    }
+
+    .toc-link:hover svg {
+      opacity:1;
+      transform:translateX(2px);
+    }
+
+    .help-info {
+      margin-top:12px;
+      padding:10px 14px;
+      background:rgba(124,58,237,.08);
+      border-left:3px solid var(--accent);
+      border-radius:0 8px 8px 0;
+    }
+
+    .help-info-title {
+      color:var(--accent);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      font-weight:800;
+    }
+
+    .help-tip {
+      margin-top:12px;
+      padding:10px 14px;
+      background:rgba(245,158,11,.10);
+      border-left:3px solid #f59e0b;
+      border-radius:0 8px 8px 0;
+    }
+
+    .help-tip-title {
+      color:#d97706;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      font-weight:800;
+    }
+
+    .tutor-label {
+      margin:32px 0 16px;
+      padding:14px 18px;
+      background:rgba(124,58,237,.10);
+      border-left:4px solid var(--accent);
+      border-radius:0 12px 12px 0;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(22px);
+    }
+
+    .tutor-label-title {
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      color:var(--accent);
+    }
+
+    .tutor-label-sub {
+      font-size:13px;
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+
+    .back-to-top {
+      position:sticky;
+      bottom:24px;
+      float:right;
+      width:44px;
+      height:44px;
+      background:var(--accent);
+      color:#fff;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 4px 15px rgba(0,0,0,.25);
+      cursor:pointer;
+      transition:transform .2s ease;
+      z-index:50;
+      margin-top:-20px;
+      text-decoration:none;
+    }
+    .back-to-top:hover { transform:translateY(-3px); }
+
+    footer {
+      margin-top:34px;
+      color:var(--text-muted);
+      font-size:12px;
+      line-height:1.65;
+      border-top:1px solid rgba(255,255,255,.45);
+      padding-top:18px;
+    }
+
+    footer summary {
+      cursor:pointer;
+      font-weight:800;
+      color:var(--text-muted);
+    }
+
+    footer summary:hover { color:var(--accent); }
+    footer h2 {
+      font-family:"Outfit";
+      font-size:16px;
+      color:var(--text);
+      margin:14px 0 8px;
+    }
+    footer h3 {
+      font-size:13px;
+      color:var(--text);
+      margin:12px 0 4px;
+    }
+
+    @media (max-width:900px) {
+      .hero-inner { grid-template-columns:1fr; }
+      .logo-card { min-height:180px; }
+    }
+    @media (max-width:620px) {
+      .page { width:min(100% - 24px, 1120px); padding-top:20px; }
+      .hero { border-radius:24px; }
+      .help-section { padding:18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div id="progress-bar"></div>
+
+  <main class="page">
+    <section class="hero" id="top">
+      <div class="hero-inner">
+        <div>
+          <div class="eyebrow"><i data-lucide="book-open"></i> EDUBAN Standalone</div>
+          <h1>Nutzerhandbuch<span class="script">Kurzanleitung für Unterricht und Projektarbeit</span></h1>
+          <p class="lead">Diese eigenständige Seite erklärt die wichtigsten Funktionen von EDUBAN: Kanban-Boards, Karten, Abhängigkeiten, Meilensteine, U-Bahn-Ansicht, Timeline, Images, Verschlüsselung und Tutor-Funktionen.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="#toc-top"><i data-lucide="list"></i> Inhaltsverzeichnis</a>
+            <a class="btn btn-ghost" href="https://eduban.vercel.app/schueler.html" target="_blank" rel="noopener noreferrer"><i data-lucide="external-link"></i> EDUBAN öffnen</a>
+          </div>
+        </div>
+        <div class="logo-card">
+          <img src="images/logo.png" alt="EDUBAN" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=&quot;logo-fallback&quot;>EDUBAN</div>';">
+        </div>
+      </div>
+    </section>
+
+    <nav id="toc-top" class="toc">
+      <div class="toc-grid">
+        <div class="toc-col">
+          <div class="toc-title"><i data-lucide="users"></i> Für alle Nutzer</div>
+          <div class="toc-links">
+            <a href="#ch-was-ist-kanban" class="toc-link"><i data-lucide="trello" style="width:14px;height:14px;"></i>Was ist ein Kanban-Board?</a>
+<a href="#ch-wie-funktioniert" class="toc-link"><i data-lucide="info" style="width:14px;height:14px;"></i>Wie die App funktioniert</a>
+<a href="#ch-anmeldung-tutor" class="toc-link"><i data-lucide="log-in" style="width:14px;height:14px;"></i>Anmeldung als Tutor</a>
+<a href="#ch-anmeldung-schueler" class="toc-link"><i data-lucide="user-check" style="width:14px;height:14px;"></i>Anmeldung als Schülerin oder Schüler</a>
+<a href="#ch-boards-erstellen" class="toc-link"><i data-lucide="layout-dashboard" style="width:14px;height:14px;"></i>Boards erstellen und duplizieren</a>
+<a href="#ch-spalten" class="toc-link"><i data-lucide="columns" style="width:14px;height:14px;"></i>Spalten verwalten</a>
+<a href="#ch-karten" class="toc-link"><i data-lucide="copy" style="width:14px;height:14px;"></i>Karten erstellen und bearbeiten</a>
+<a href="#ch-ideen" class="toc-link"><i data-lucide="lightbulb" style="width:14px;height:14px;"></i>Ideenbox</a>
+<a href="#ch-meilensteine" class="toc-link"><i data-lucide="flag" style="width:14px;height:14px;"></i>Meilensteine & Projektphasen</a>
+<a href="#ch-kommentare" class="toc-link"><i data-lucide="message-square" style="width:14px;height:14px;"></i>Kommentare und Feedback</a>
+<a href="#ch-abhaengigkeiten" class="toc-link"><i data-lucide="link" style="width:14px;height:14px;"></i>Voraussetzungen & Abhängigkeiten</a>
+<a href="#ch-dragdrop" class="toc-link"><i data-lucide="move" style="width:14px;height:14px;"></i>Karten verschieben</a>
+<a href="#ch-gruppieren" class="toc-link"><i data-lucide="link-2" style="width:14px;height:14px;"></i>Karten verketten (Gruppen)</a>
+<a href="#ch-loeschen" class="toc-link"><i data-lucide="trash-2" style="width:14px;height:14px;"></i>Karten löschen</a>
+<a href="#ch-hintergrund" class="toc-link"><i data-lucide="palette" style="width:14px;height:14px;"></i>Hintergrund anpassen</a>
+<a href="#ch-termine" class="toc-link"><i data-lucide="calendar" style="width:14px;height:14px;"></i>Termine und Fristen</a>
+<a href="#ch-ubahn" class="toc-link"><i data-lucide="train-front" style="width:14px;height:14px;"></i>U-Bahn-Ansicht (Projektablauf)</a>
+<a href="#ch-timeline" class="toc-link"><i data-lucide="bar-chart-2" style="width:14px;height:14px;"></i>Projekt-Timeline (Gantt)</a>
+<a href="#ch-export-import" class="toc-link"><i data-lucide="file-json" style="width:14px;height:14px;"></i>Exportieren, Image und KI Import</a>
+<a href="#ch-pwa" class="toc-link"><i data-lucide="smartphone" style="width:14px;height:14px;"></i>App installieren</a>
+          </div>
+        </div>
+        <div class="toc-col">
+          <div class="toc-title"><i data-lucide="graduation-cap"></i> Für Tutoren</div>
+          <div class="toc-links">
+            <a href="#ch-ini-erstellen" class="toc-link"><i data-lucide="key" style="width:14px;height:14px;"></i>Tutor-Schlüssel erstellen (passwortfrei)</a>
+<a href="#ch-image-oeffnen" class="toc-link"><i data-lucide="folder-open" style="width:14px;height:14px;"></i>Image einer Schülerin oder eines Schülers öffnen</a>
+<a href="#ch-tutor-deadline-aging" class="toc-link"><i data-lucide="calendar-clock" style="width:14px;height:14px;"></i>Deadline & Aging steuern</a>
+<a href="#ch-benotung" class="toc-link"><i data-lucide="check-circle" style="width:14px;height:14px;"></i>Benotung (Prozess & Ergebnis)</a>
+<a href="#ch-noten-export" class="toc-link"><i data-lucide="printer" style="width:14px;height:14px;"></i>Noten exportieren & Gutachten</a>
+<a href="#ch-noten-sicherung" class="toc-link"><i data-lucide="shield-check" style="width:14px;height:14px;"></i>Noten sichern & wiederherstellen</a>
+<a href="#ch-rueckgabe" class="toc-link"><i data-lucide="send" style="width:14px;height:14px;"></i>Image zurückgeben</a>
+<a href="#ch-hintergrundbilder" class="toc-link"><i data-lucide="image" style="width:14px;height:14px;"></i>Hintergrundbilder verwalten</a>
+<a href="#ch-datenschutz" class="toc-link"><i data-lucide="lock" style="width:14px;height:14px;"></i>Datenschutz, Sicherung & Verschlüsselung</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    
+<section id="ch-was-ist-kanban" class="help-section">
+  <div class="help-heading"><span><i data-lucide="trello"></i>Was ist ein Kanban-Board?</span></div>
+  
+<p>Kanban ist eine Methode zur Visualisierung und Steuerung von Arbeit. Der Begriff stammt aus dem Japanischen und bedeutet so viel wie <strong>„Signalkarte“</strong>. Entwickelt wurde die Methode ursprünglich bei Toyota; heute wird sie weltweit in Schulen, Unternehmen und von Einzelpersonen eingesetzt.</p>
+<p>Die Grundidee: Aufgaben werden als <strong>Karten</strong> dargestellt und auf einem Board in <strong>Spalten</strong> angeordnet, die den aktuellen Status zeigen.</p>
+<ul><li><strong>— Offen</strong> – Aufgaben, die noch nicht begonnen wurden</li><li><strong>— In Bearbeitung</strong> – Aufgaben, an denen gerade gearbeitet wird</li><li><strong>— Fertig</strong> – abgeschlossene Aufgaben</li></ul>
+<p>Ein zentrales Prinzip ist das <strong>WIP-Limit</strong>, also Work in Progress. Es legt fest, wie viele Aufgaben gleichzeitig in Bearbeitung sein dürfen. Wer zu viele Dinge gleichzeitig beginnt, erledigt am Ende weniger. Das WIP-Limit zwingt dazu, angefangene Aufgaben zu Ende zu bringen, bevor neue begonnen werden.</p>
+<div class="help-info"><div class="help-info-title">Warum Kanban in der Schule?</div><p>Ein Kanban-Board macht den Arbeitsfluss für alle Beteiligten sichtbar: Wo stockt es? Was ist erledigt? Wer arbeitet woran? Diese Transparenz ist besonders wertvoll bei Gruppenarbeiten und Projekten.</p></div>
+
+</section>
+
+
+<section id="ch-wie-funktioniert" class="help-section">
+  <div class="help-heading"><span><i data-lucide="info"></i>Wie die App funktioniert</span></div>
+  
+<p>EDUBAN Standalone funktioniert grundsätzlich <strong>lokal und ohne eigenes EDUBAN-Konto</strong>. Alle Daten bleiben zunächst auf dem jeweiligen Gerät. Der Austausch zwischen Tutor und Schülerinnen und Schülern läuft entweder über weitergegebene Dateien oder optional über die Datenbank-Funktion.</p>
+<ul><li><strong>Schlüsseldateien statt Passwörter:</strong> EDUBAN arbeitet passwortfrei – die Datei ist der Schlüssel. Der Tutor behält seinen privaten <strong>Tutor-Schlüssel</strong> und verteilt die <strong>Verteil-INI</strong> an die Klasse. Jede Schülerin und jeder Schüler erhält bei der Registrierung eine persönliche <strong>Schüler-INI</strong> als Anmelde-Schlüssel.</li><li><strong>Image:</strong> So heißt die exportierte Board-Datei einer Schülerin oder eines Schülers. Der Tutor öffnet sie, gibt Feedback und gibt das Image zurück.</li><li><strong>Datenbank-Speicherung:</strong> Schülerinnen und Schüler können ihr verschlüsseltes Image privat in der Datenbank speichern, laden und löschen. Tutoren sehen nur Images, die ausdrücklich über „An den Tutor weiterleiten“ abgegeben wurden, und können Rückgaben dort verschlüsselt ablegen.</li><li><strong>Board-Vorlagen:</strong> Tutoren können vorbereitete Startboards als offene Vorlage exportieren oder in der Datenbank bereitstellen.</li><li><strong>Noten-Sicherung:</strong> Eine separate verschlüsselte Datei nur für Tutoren. Sie speichert Prozessnoten, Aufwandswerte, Bewertungskommentare und Ergebnisnoten.</li></ul>
+<div class="help-info"><div class="help-info-title">Verschlüsselung</div><p>Jedes Image ist verschlüsselt. Nur der Tutor mit seinem privaten Tutor-Schlüssel und die Schülerin oder der Schüler mit der persönlichen Schüler-INI können es öffnen.</p></div>
+<div class="help-tip"><div class="help-tip-title">Bewertungen bleiben Tutor-Daten</div><p>Noten werden nicht an Schülerinnen und Schüler zurückgegeben. Der Tutor sichert sie separat über „Noten sichern“ und kann sie später wiederherstellen.</p></div>
+
+</section>
+
+
+<section id="ch-anmeldung-tutor" class="help-section">
+  <div class="help-heading"><span><i data-lucide="log-in"></i>Anmeldung als Tutor</span></div>
+  
+<p>Beim ersten Öffnen der App gibst du deinen <strong>Namen</strong> ein und klickst auf „Los geht's“. Danach bist du sofort im Tutor-Modus.</p>
+<p>Der nächste wichtige Schritt ist die Erstellung deiner <strong>Schlüsseldateien</strong> (privater Tutor-Schlüssel + Verteil-INI) – ganz ohne Masterpasswort. Ohne die Verteil-INI können Schülerinnen und Schüler sich nicht bei dir registrieren.</p>
+<div class="help-tip"><div class="help-tip-title">Beim nächsten Mal</div><p>Wenn du die App erneut öffnest, landest du direkt in der App. Mit „Abmelden“ in der Seitenleiste kannst du den Namen zurücksetzen.</p></div>
+
+</section>
+
+
+<section id="ch-anmeldung-schueler" class="help-section">
+  <div class="help-heading"><span><i data-lucide="user-check"></i>Anmeldung als Schülerin oder Schüler</span></div>
+  
+<p>Die Schüleransicht wird über einen speziellen Link aufgerufen. Beim ersten Aufruf erscheint ein Registrierungsformular in drei Schritten:</p>
+<ol><li><strong>Verteil-INI laden:</strong> Lade die Datei „…fuer-schueler.ini", die du vom Tutor erhalten hast.</li><li><strong>Namen eingeben:</strong> Gib deinen Namen oder Nickname ein.</li><li><strong>Schüler-INI speichern:</strong> Die App erstellt automatisch deine persönliche Schüler-INI. <strong>Bewahre sie gut auf</strong> – sie ist dein Anmelde-Schlüssel, ein Passwort gibt es nicht.</li></ol>
+<p>Auf demselben Gerät bleibst du automatisch angemeldet. Auf anderen Geräten wählst du einfach deine Schüler-INI aus – fertig.</p>
+<div class="help-tip"><div class="help-tip-title">Neu anmelden</div><p>Über „Neu anmelden" kannst du dich mit einer anderen Schüler-INI anmelden oder dich mit einer neuen Verteil-INI registrieren. Deine Boards bleiben auf dem Gerät erhalten.</p></div>
+
+</section>
+
+
+<section id="ch-boards-erstellen" class="help-section">
+  <div class="help-heading"><span><i data-lucide="layout-dashboard"></i>Boards erstellen und duplizieren</span></div>
+  
+<p>Ein <strong>Board</strong> ist dein Arbeitsbereich. Die Seitenleiste öffnest du über den Menüknopf direkt neben dem Boardnamen. Dort klickst du auf <strong>„＋ Neues Board“</strong>, um den Einrichtungsassistenten zu starten.</p>
+<ol><li><strong>Board-Name:</strong> Gib dem Board einen aussagekräftigen Namen.</li><li><strong>Teamgröße:</strong> Wähle aus, wie viele Personen mitarbeiten. Das WIP-Limit wird automatisch berechnet.</li><li><strong>Nicknames:</strong> Gib für jede Person einen Namen oder Nickname ein.</li></ol>
+<p>Nach der Erstellung enthält das Board drei Standardspalten: <em>— Offen</em>, <em>— In Bearbeitung</em> und <em>— Fertig</em>. Boards können dupliziert werden. Das Löschen kompletter Boards ist nur im Tutor-Modus möglich.</p>
+
+</section>
+
+
+<section id="ch-spalten" class="help-section">
+  <div class="help-heading"><span><i data-lucide="columns"></i>Spalten verwalten</span></div>
+  
+<p>Jedes Board besteht aus Spalten, die den Status einer Aufgabe beschreiben. Du kannst eigene Spalten hinzufügen. Spalten können im Tutor-Modus gelöscht werden; dabei werden auch alle Karten in dieser Spalte gelöscht.</p>
+<p>Die Spalte „In Bearbeitung“ hat ein automatisches WIP-Limit. Wenn das Limit erreicht ist, färbt sich die Spalte deutlich und nimmt keine weiteren Karten auf.</p>
+<div class="help-tip"><div class="help-tip-title">Die Voraussetzungen-Spalte</div><p>Die spezielle Voraussetzungen-Spalte eignet sich, um Vorarbeiten abzulegen. Karten in dieser Spalte gelten für Abhängigkeiten und Meilensteine als erledigt, tauchen aber nicht in der Benotung auf.</p></div>
+
+</section>
+
+
+<section id="ch-karten" class="help-section">
+  <div class="help-heading"><span><i data-lucide="copy"></i>Karten erstellen und bearbeiten</span></div>
+  
+<p><strong>Karten</strong> sind einzelne Aufgaben. Beim Erstellen kannst du Priorität, Fälligkeit und Zuweisung festlegen. Per Doppelklick oder Stift-Symbol öffnest du den Bearbeitungsdialog.</p>
+<ul><li>Text und Beschreibung der Aufgabe ändern</li><li>Priorität anpassen</li><li>Fälligkeitsdatum setzen</li><li>Karte einem Teammitglied zuweisen</li></ul>
+<p>Wenn Meilensteine angelegt sind, zeigt jede Karte an, zu welcher Projektphase sie gehört. Wird eine Karte gelöscht, landet sie zunächst in der Ideenbox.</p>
+
+</section>
+
+
+<section id="ch-ideen" class="help-section">
+  <div class="help-heading"><span><i data-lucide="lightbulb"></i>Ideenbox</span></div>
+  
+<p>Die <strong>Ideenbox</strong> sammelt Karten, die noch nicht ins Board gehören, aber später wichtig werden können. Neue Ideen haben wie normale Karten Titel, Beschreibung, Priorität, Fälligkeit, Zuweisung und Zeitschätzung.</p>
+<p>Wenn eine Idee bereit ist, kann sie direkt in die Vorbereitung verschoben werden. Entfernte Board-Karten landen zuerst in der Ideenbox und können von dort wiederhergestellt oder endgültig gelöscht werden.</p>
+<div class="help-info"><div class="help-info-title">Wird mitgespeichert</div><p>Der Inhalt der Ideenbox gehört zum Board und wird in Exporten, Images und Datenbank-Sicherungen mitgenommen.</p></div>
+
+</section>
+
+
+<section id="ch-meilensteine" class="help-section">
+  <div class="help-heading"><span><i data-lucide="flag"></i>Meilensteine & Projektphasen</span></div>
+  
+<p><strong>Meilensteine</strong> sind Projektphasen, die nacheinander erreicht werden. Sie sind keine normalen Karten, sondern beschreiben grobe Etappen wie Vorbereitung, Produktentwurf oder Präsentation.</p>
+<p>Eine Phase gilt als erreicht, sobald alle zugeordneten Karten in einer Fertig-Spalte liegen. Spätere Phasen bleiben gesperrt, bis die vorherige Phase abgeschlossen ist. So entsteht eine klare Projektlogik statt einer bloßen Sammlung einzelner Aufgaben.</p>
+<div class="help-info"><div class="help-info-title">Sichtbar im Board, U-Bahn-Plan und in der Timeline</div><p>Projektphasen erscheinen als Fortschrittsleiste und strukturieren U-Bahn-Ansicht sowie Timeline.</p></div>
+
+</section>
+
+
+<section id="ch-kommentare" class="help-section">
+  <div class="help-heading"><span><i data-lucide="message-square"></i>Kommentare und Feedback</span></div>
+  
+<p>Jede Karte hat ein Kommentarsystem. Schülerinnen und Schüler können Notizen hinterlassen; der Tutor kann direkt an der Karte Feedback geben. Auf jeder Karte zeigen kleine Symbole die Anzahl der Tutor- und Schülerkommentare.</p>
+<p>Ein Klick auf das Kommentarsymbol öffnet die Kommentarliste. Neue Kommentare werden mit Enter oder „Senden“ abgeschickt.</p>
+
+</section>
+
+
+<section id="ch-abhaengigkeiten" class="help-section">
+  <div class="help-heading"><span><i data-lucide="link"></i>Voraussetzungen & Abhängigkeiten</span></div>
+  
+<p>Bei komplexen Projekten kann eine Aufgabe erst gestartet werden, wenn eine andere bereits erledigt ist. Dafür gibt es das Abhängigkeitssystem.</p>
+<ul><li><strong>Rote Kette:</strong> Voraussetzungen fehlen noch. Die Karte ist blockiert.</li><li><strong>Grüne Kette:</strong> Alle Voraussetzungen sind erfüllt.</li><li><strong>Graue Kette:</strong> Keine Voraussetzungen definiert.</li></ul>
+<p>Ein Klick auf das Ketten-Symbol öffnet die Verknüpfungsliste.</p>
+
+</section>
+
+
+<section id="ch-dragdrop" class="help-section">
+  <div class="help-heading"><span><i data-lucide="move"></i>Karten verschieben</span></div>
+  
+<p>Karten können per Drag & Drop oder über Pfeil-Buttons verschoben werden. Die Pfeile verschieben Karten spaltenweise oder sortieren sie innerhalb einer Spalte.</p>
+<div class="help-tip"><div class="help-tip-title">Verschieben blockiert?</div><p>Karten mit unerfüllten Voraussetzungen können nicht nach rechts verschoben werden.</p></div>
+<p>Beim Verschieben werden automatisch Zeitstempel gesetzt: Startdatum beim ersten Verlassen von „Offen“ und Enddatum beim Eingang in „Fertig“.</p>
+
+</section>
+
+
+<section id="ch-gruppieren" class="help-section">
+  <div class="help-heading"><span><i data-lucide="link-2"></i>Karten verketten (Gruppen)</span></div>
+  
+<p>Zusammengehörige Aufgaben können verkettet werden. Sie bilden dann einen gemeinsamen optischen Block und bewegen sich beim Verschieben gemeinsam.</p>
+<p>Trotz Verkettung bleiben Karten intern eigenständig. Im Notenmodul können weiterhin individuelle Noten vergeben werden.</p>
+
+</section>
+
+
+<section id="ch-loeschen" class="help-section">
+  <div class="help-heading"><span><i data-lucide="trash-2"></i>Karten löschen</span></div>
+  
+<p>Karten können über das Mülleimer-Symbol gelöscht werden. Schülerinnen und Schüler können nur eigene Karten löschen. Tutoren können alle Karten löschen.</p>
+<p>Karten in der Fertig-Spalte sind in der Schüleransicht geschützt. Der Tutor kann fertige Karten ausnahmsweise zurückschieben, erhält aber eine Warnung, weil dabei Prozessnoten und Bewertungskommentare gelöscht werden.</p>
+
+</section>
+
+
+<section id="ch-hintergrund" class="help-section">
+  <div class="help-heading"><span><i data-lucide="palette"></i>Hintergrund anpassen</span></div>
+  
+<p>In den Einstellungen kannst du Erscheinungsbild, Panel-Transparenz und Hintergrund anpassen. Es gibt Farbverläufe und Hintergrundbilder. Alle Einstellungen werden lokal auf dem Gerät gespeichert.</p>
+
+</section>
+
+
+<section id="ch-termine" class="help-section">
+  <div class="help-heading"><span><i data-lucide="calendar"></i>Termine und Fristen</span></div>
+  
+<p>EDUBAN unterstützt drei Arten von Fristen:</p>
+<ul><li><strong>Fälligkeitsdatum pro Karte</strong></li><li><strong>Projekt-Deadline</strong> für das gesamte Board</li><li><strong>Aging-Warnung</strong> für Karten, die zu lange in Bearbeitung liegen</li></ul>
+<p>Das Aging kann im Tutor-Modus pausiert werden, zum Beispiel während Ferien oder Projektunterbrechungen.</p>
+
+</section>
+
+
+<section id="ch-ubahn" class="help-section">
+  <div class="help-heading"><span><i data-lucide="train-front"></i>U-Bahn-Ansicht (Projektablauf)</span></div>
+  
+<div class="help-info"><div class="help-info-title">Warum ein U-Bahn-Plan?</div><p>Ein komplexes Projekt ist wie der Nahverkehr einer Stadt: Jede Person fährt auf einer eigenen Linie, Aufgaben sind Stationen und Gruppenarbeiten werden zu Umsteigestationen.</p></div>
+<p>Die U-Bahn-Ansicht verwandelt dein Kanban-Board in einen Liniennetzplan. So werden Engpässe, Abhängigkeiten und gemeinsame Aufgaben sofort sichtbar.</p>
+<ul><li>Jede Person bekommt eine eigene farbige Linie.</li><li>Jede Aufgabe ist eine Station.</li><li>Gruppenarbeiten erscheinen als gemeinsame Stationen.</li><li>Aktive Aufgaben erhalten einen pulsierenden Ring.</li></ul>
+<p>Über den Röntgen-Blick beim Darüberfahren mit der Maus werden Vorgänger und Nachfolger einer Aufgabe hervorgehoben. Im Detailpopup können Abhängigkeiten und Gruppenarbeit direkt bearbeitet werden.</p>
+
+</section>
+
+
+<section id="ch-timeline" class="help-section">
+  <div class="help-heading"><span><i data-lucide="bar-chart-2"></i>Projekt-Timeline (Gantt)</span></div>
+  
+<p>Die Projekt-Timeline zeigt Aufgaben als Balkendiagramm mit einer Zeitachse in Schulstunden. Jeder Balken steht für eine Aufgabe; die horizontale Position zeigt den berechneten oder manuell gesetzten Startzeitpunkt.</p>
+<ul><li>Durchgezogener Rahmen = Einzelaufgabe</li><li>Gestrichelter Rahmen = Gruppenarbeit</li><li>📌 = Startzeitpunkt wurde manuell fixiert</li></ul>
+<p>Mit Drag & Drop können Balken verschoben werden. Der Button „Optimieren“ berechnet einen möglichst frühen Ablaufplan unter Berücksichtigung von Abhängigkeiten, Personenverfügbarkeit und Gruppenarbeiten.</p>
+
+</section>
+
+
+<section id="ch-export-import" class="help-section">
+  <div class="help-heading"><span><i data-lucide="file-json"></i>Exportieren, Image und KI Import</span></div>
+  
+<p>EDUBAN bietet mehrere Wege, Boards weiterzugeben und zu dokumentieren.</p>
+<ul><li><strong>Exportieren:</strong> Gibt den Board-Inhalt als formatierten Klartext aus.</li><li><strong>Image exportieren:</strong> Erzeugt eine verschlüsselte Datei zur Abgabe oder Sicherung.</li><li><strong>Importieren:</strong> Lädt ein zurückgegebenes Image.</li><li><strong>Datenbank speichern und laden:</strong> Speichert verschlüsselte Images optional privat in der Datenbank; Schülerinnen und Schüler können eigene Dateien löschen.</li><li><strong>An den Tutor weiterleiten:</strong> Gibt ein verschlüsseltes Image bewusst für den Tutor frei.</li><li><strong>Board-Vorlagen:</strong> Offene Startboards für Schülerinnen und Schüler.</li><li><strong>KI Import:</strong> Liest JSON-Code ein, der von einem KI-System erzeugt wurde.</li></ul>
+<div class="help-info"><div class="help-info-title">KI-Prinzip</div><p>KI-Funktionen sind bewusst nicht direkt eingebaut. Du kopierst den Prompt manuell in das KI-System deiner Wahl und fügst das Ergebnis über den KI Import ein.</p></div>
+
+</section>
+
+
+<section id="ch-pwa" class="help-section">
+  <div class="help-heading"><span><i data-lucide="smartphone"></i>App installieren</span></div>
+  
+<p>EDUBAN kann als eigenständige App installiert werden, ohne App Store. Auf Android und Desktop-Chrome erscheint ein Installationshinweis. Auf dem iPhone wird die Seite in Safari geöffnet und über „Teilen → Zum Home-Bildschirm“ hinzugefügt.</p>
+<p>Die installierte Version öffnet sich im Vollbildmodus ohne Browser-Adressleiste. Alle Daten bleiben lokal auf dem Gerät.</p>
+
+</section>
+
+
+    <div class="tutor-label">
+      <div class="tutor-label-title">Für Tutoren</div>
+      <div class="tutor-label-sub">Die folgenden Funktionen sind nur im Tutor-Modus verfügbar.</div>
+    </div>
+
+    
+<section id="ch-ini-erstellen" class="help-section">
+  <div class="help-heading"><span><i data-lucide="key"></i>Tutor-Schlüssel erstellen (passwortfrei)</span></div>
+  
+<p>Beim Einrichten erstellt die App <strong>zwei Dateien</strong>: den privaten <strong>Tutor-Schlüssel</strong> („…SCHLUESSEL-privat.ini", bleibt bei dir und ersetzt das Masterpasswort) und die <strong>Verteil-INI</strong> („…fuer-schueler.ini", nur diese geht an die Klasse).</p>
+<ol><li>Klicke auf „Tutor-Schlüssel erstellen".</li><li>Gib deinen Namen ein – kein Passwort nötig.</li><li>Speichere beide Dateien sicher ab.</li><li>Gib <strong>nur die Verteil-INI</strong> an deine Schülerinnen und Schüler weiter.</li></ol>
+<div class="help-tip"><div class="help-tip-title">Wichtig</div><p>Bewahre den privaten Tutor-Schlüssel sicher auf – wer die Datei hat, kann alle Abgaben öffnen; ohne sie kannst auch du Schüler-Images nicht mehr öffnen. Die App weist die private Datei bei der Schüler-Registrierung automatisch ab, falls sie versehentlich verteilt wird.</p></div>
+
+</section>
+
+
+<section id="ch-image-oeffnen" class="help-section">
+  <div class="help-heading"><span><i data-lucide="folder-open"></i>Image einer Schülerin oder eines Schülers öffnen</span></div>
+  
+<p>Wenn du ein Schüler-Image erhältst, importierst du es einfach – dein geladener Tutor-Schlüssel entschlüsselt es automatisch, ohne Passwort. Danach kannst du Kommentare, Feedback und Bewertungen ergänzen. Sind lokal schon Noten vorhanden, fragt die App, ob die Abgabe von derselben Gruppe stammt.</p>
+<div class="help-tip"><div class="help-tip-title">Schlüssel bleibt geladen</div><p>Der Tutor-Schlüssel bleibt auf dem Gerät geladen – auch nach einem Neustart musst du ihn nicht erneut auswählen. Auf einem neuen Gerät lädst du ihn einmal über „INI laden".</p></div>
+
+</section>
+
+
+<section id="ch-tutor-deadline-aging" class="help-section">
+  <div class="help-heading"><span><i data-lucide="calendar-clock"></i>Deadline & Aging steuern</span></div>
+  
+<p>Tutoren können im Werkzeugkasten zentrale Zeitregeln für ein Board setzen: Projekt-Deadline, Aging-Limit und Aging-Pause.</p>
+<p>Die Deadline ist der gemeinsame Abgabetermin. Das Aging-Limit legt fest, nach wie vielen Tagen eine Karte in „In Bearbeitung“ als zu alt markiert wird. Mit dem Sanduhr-Symbol kann das Aging pausiert werden, zum Beispiel während Ferien oder Projektunterbrechungen.</p>
+<div class="help-info"><div class="help-info-title">Nur der Tutor steuert diese Regeln</div><p>Schülerinnen und Schüler können Fälligkeitsdaten setzen, aber Projekt-Deadline, Aging-Limit und Aging-Pause bleiben Tutor-Funktionen.</p></div>
+
+</section>
+
+
+<section id="ch-benotung" class="help-section">
+  <div class="help-heading"><span><i data-lucide="check-circle"></i>Benotung (Prozess & Ergebnis)</span></div>
+  
+<p>Das Benotungssystem folgt dem Prinzip <strong>50 % Prozess + 50 % Projektergebnis</strong>. Jede abgeschlossene Aufgabe kann benotet und mit einer Aufwands-Gewichtung versehen werden.</p>
+<p>Unter den Prozesskarten jedes Projektmitglieds gibt es ein Feld für die Ergebnisnote. EDUBAN berechnet daraus automatisch die Endnote.</p>
+<div class="help-info"><div class="help-info-title">Noten bleiben beim Tutor</div><p>Schüler-Images enthalten keine Noten. Bewertungen bleiben im Tutor-Modus und können zusätzlich als Noten-Sicherung exportiert werden.</p></div>
+
+</section>
+
+
+<section id="ch-noten-export" class="help-section">
+  <div class="help-heading"><span><i data-lucide="printer"></i>Noten exportieren & Gutachten</span></div>
+  
+<p>Im Werkzeugkasten gibt es zwei Dokumentationsfunktionen: „Noten exportieren“ kopiert eine vollständige Notenübersicht in die Zwischenablage. „Gutachten-Prompt erzeugen“ erstellt pro Mitglied einen Prompt für ein sachliches, wertschätzendes Gutachten.</p>
+
+</section>
+
+
+<section id="ch-noten-sicherung" class="help-section">
+  <div class="help-heading"><span><i data-lucide="shield-check"></i>Noten sichern & wiederherstellen</span></div>
+  
+<p>Bewertungen sind sensible Tutor-Daten und werden getrennt vom Schüler-Image gesichert. Die Noten-Sicherung erstellt eine eigene verschlüsselte Datei mit Prozessnoten, Aufwandswerten, Bewertungskommentaren und Ergebnisnoten.</p>
+<div class="help-tip"><div class="help-tip-title">Empfohlener Ablauf</div><p>Sichere Noten regelmäßig, besonders nach Bewertungsrunden und bevor du Browserdaten löschst, den Rechner wechselst oder ein Schüler-Image importierst.</p></div>
+
+</section>
+
+
+<section id="ch-rueckgabe" class="help-section">
+  <div class="help-heading"><span><i data-lucide="send"></i>Image zurückgeben</span></div>
+  
+<p>Nachdem du ein Image importiert, bearbeitet und kommentiert hast, kannst du es an die Schülerin oder den Schüler zurückgeben. Die Rückgabe-Datei enthält Board-Änderungen und Feedback-Kommentare, aber keine Noten.</p>
+<div class="help-info"><div class="help-info-title">Wie funktioniert das?</div><p>Die zurückgegebene Datei enthält denselben verschlüsselten Datenschlüssel wie das Original. Die Schülerin oder der Schüler öffnet sie automatisch mit der eigenen Schüler-INI – ohne Passwort.</p></div>
+
+</section>
+
+
+<section id="ch-hintergrundbilder" class="help-section">
+  <div class="help-heading"><span><i data-lucide="image"></i>Hintergrundbilder verwalten</span></div>
+  
+<p>Hintergrundbilder müssen als <code>H1.png</code>, <code>H2.png</code> usw. im Ordner <code>images/</code> liegen. Die App zeigt automatisch Thumbnails für alle verfügbaren Bilder an.</p>
+
+</section>
+
+
+<section id="ch-datenschutz" class="help-section">
+  <div class="help-heading"><span><i data-lucide="lock"></i>Datenschutz, Sicherung & Verschlüsselung</span></div>
+  
+<p>EDUBAN speichert Daten zuerst lokal im Browser. Zusätzlich kann die Datenbank-Funktion genutzt werden. Schülerabgaben und Rückgaben werden als verschlüsselte EDUBAN-Images gespeichert. Offene Vorlagen sind davon getrennt und enthalten keine vertraulichen Schülerdaten oder Tutor-Noten.</p>
+<p>Images sind verschlüsselte JSON-Dateien. Bei Schüler-Images wird ein zufälliger Datenschlüssel erzeugt, der sowohl mit dem Geheimnis der Schüler-INI als auch mit dem öffentlichen Schlüssel des Tutors geschützt wird.</p>
+<ul><li><strong>Schülerinnen und Schüler:</strong> regelmäßig ein Image exportieren.</li><li><strong>Tutoren:</strong> Schüler-Images getrennt von eigenen Noten-Sicherungen aufbewahren.</li><li><strong>Noten:</strong> nach Bewertungsrunden zusätzlich über „Noten sichern“ exportieren.</li><li><strong>Tutor-Schlüssel &amp; Schüler-INI:</strong> sicher sichern (Kopie auf USB-Stick); ohne den privaten Tutor-Schlüssel können Abgaben nicht mehr geöffnet werden, ohne die Schüler-INI ist keine Anmeldung möglich.</li></ul>
+<p>Beim Abmelden werden lokale App-Daten von diesem Gerät gelöscht. Vorher sollten Images und Noten-Sicherungen exportiert werden.</p>
+
+</section>
+
+
+    <footer>
+      <details>
+        <summary>Impressum</summary>
+        <h2>Impressum</h2>
+        <h3>Angaben gemäß § 5 DDG</h3>
+        <p><strong>Verantwortlich für den Inhalt</strong><br>Dr. Claus Unterberg<br>Gymnasium Thomaeum Kempen<br>Am Gymnasium 4<br>47906 Kempen</p>
+        <h3>Kontakt</h3>
+        <p>E-Mail: <a href="mailto:claus.unterberg@thomaeum.de">claus.unterberg@thomaeum.de</a></p>
+        <h3>Verantwortlich im Sinne des § 18 Abs. 2 MStV</h3>
+        <p>Dr. Claus Unterberg, Anschrift wie oben.</p>
+        <h3>Urheberrecht</h3>
+        <p>Die auf dieser Seite veröffentlichten Texte und Grafiken sind urheberrechtlich geschützt. Eine Nutzung im schulischen Kontext ist ausdrücklich erwünscht. Eine darüber hinausgehende Verwendung bedarf der vorherigen Zustimmung.</p>
+      </details>
+    </footer>
+
+    <a href="#top" class="back-to-top" title="Zum Seitenanfang"><i data-lucide="arrow-up" style="width:24px;height:24px;"></i></a>
+    <div style="clear:both;"></div>
+  </main>
+
+  <script src="fonts/lucide.min.js"></script>
+  <script>
+    "use strict";
+    function refreshIcons() {
+      if (window.lucide) window.lucide.createIcons();
+    }
+    window.addEventListener("scroll", function() {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      var bar = document.getElementById("progress-bar");
+      if (bar) bar.style.width = (h > 0 ? window.scrollY / h * 100 : 0) + "%";
+    });
+    refreshIcons();
+  </script>
+</body>
+</html>

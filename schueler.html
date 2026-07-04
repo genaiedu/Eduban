@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>EDUBAN – Kanban für Bildung</title>
+  <link rel="icon" type="image/png" sizes="512x512" href="images/logo-512.png"/>
+  <link rel="icon" type="image/png" sizes="192x192" href="images/logo-192.png"/>
+  <link rel="manifest" href="manifest-schueler.json">
+  <meta name="theme-color" content="#0a0e1a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="EDUBAN">
+  <link rel="apple-touch-icon" href="images/logo-192.png">
+  <script src="fonts/lucide.min.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-body: #0a0e1a;
+      --bg-panel: #1a1f2e;
+      --bg-card: #1e2436;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: rgba(255,255,255,0.1);
+      --accent: #22c55e;
+      --accent-hover: #16a34a;
+    }
+    html, body {
+      min-height: 100%;
+      background: var(--bg-body);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .card {
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    .logo-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border-radius: 28px;
+      width: 110px;
+      height: 110px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+    }
+    .logo-wrap img { width: 84px; height: 84px; object-fit: contain; }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .role-badge {
+      display: inline-block;
+      background: rgba(34,197,94,0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34,197,94,0.35);
+      border-radius: 20px;
+      padding: 3px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+    .install-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .btn-install {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+    .btn-install:active { opacity: 0.8; }
+    .btn-android {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+    }
+    .btn-ios {
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.15) !important;
+    }
+    .btn-main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 15px 20px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      transition: background 0.2s;
+      margin-top: 8px;
+    }
+    .btn-main:hover { background: var(--accent-hover); }
+    .btn-main:active { opacity: 0.85; }
+
+    /* iOS Dialog */
+    .ios-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .ios-sheet {
+      background: var(--bg-panel);
+      border-radius: 20px 20px 0 0;
+      padding: 28px 24px 44px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.4);
+    }
+    .ios-sheet h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ios-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .ios-num {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+    .ios-text {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.55;
+      text-align: left;
+    }
+    .ios-text strong { color: var(--text); }
+    .btn-close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 13px;
+      margin-top: 8px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div>
+    <div class="logo-wrap">
+      <img src="images/logo.png" alt="EDUBAN" onerror="this.style.display='none'"/>
+    </div>
+  </div>
+
+  <div class="role-badge">SchülerIn-App</div>
+  <p class="subtitle">Dein persönliches Kanban-Board. Dein Tutor gibt dir eine INI-Datei – damit meldest du dich hier an.</p>
+
+  <div class="install-section">
+    <button class="btn-install btn-android" id="android-btn">
+      <i data-lucide="smartphone" style="width:18px;height:18px;flex-shrink:0;"></i>
+      Als Android-App installieren
+    </button>
+    <button class="btn-install btn-ios" id="ios-btn" onclick="document.getElementById('ios-dialog').style.display='flex'">
+      <i data-lucide="tablet-smartphone" style="width:18px;height:18px;flex-shrink:0;"></i>
+      Anleitung: Installation auf iPhone/iPad
+    </button>
+  </div>
+
+  <button class="btn-main" onclick="goToApp()">
+    <i data-lucide="arrow-right" style="width:17px;height:17px;"></i>
+    Zur App
+  </button>
+</div>
+
+<!-- iOS Installationsanleitung -->
+<div id="ios-dialog" style="display:none;" class="ios-overlay" onclick="if(event.target===this) this.style.display='none'">
+  <div class="ios-sheet">
+    <h2>
+      <i data-lucide="info" style="width:18px;height:18px;color:var(--accent);"></i>
+      Installation auf iPhone / iPad
+    </h2>
+    <div class="ios-step">
+      <div class="ios-num">1</div>
+      <div class="ios-text">Öffne diese Seite in <strong>Safari</strong> (nicht Chrome oder Firefox)</div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-num">2</div>
+      <div class="ios-text">Tippe unten in der Menüleiste auf das <strong>Teilen-Symbol</strong> <span style="font-size:16px;vertical-align:-2px;">⎙</span></div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-num">3</div>
+      <div class="ios-text">Scrolle im Menü nach unten und tippe auf <strong>„Zum Home-Bildschirm"</strong></div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-num">4</div>
+      <div class="ios-text">Tippe oben rechts auf <strong>„Hinzufügen"</strong> – die App erscheint als Icon auf deinem Homescreen</div>
+    </div>
+    <button class="btn-close" onclick="document.getElementById('ios-dialog').style.display='none'">Verstanden</button>
+  </div>
+</div>
+
+<script>
+  let installPrompt = null;
+  let redirectTimer = null;
+
+  // iOS erkennen
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.navigator.standalone === true
+    || window.matchMedia('(display-mode: standalone)').matches;
+
+  if (isIOS && !isStandalone) {
+    document.getElementById('ios-btn').style.display = 'flex';
+  }
+
+  // Android / Chrome Install-Prompt abfangen
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    installPrompt = e;
+    document.getElementById('android-btn').style.display = 'flex';
+    clearTimeout(redirectTimer); // Seite sichtbar lassen damit User installieren kann
+  });
+
+  document.getElementById('android-btn').addEventListener('click', async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === 'accepted') {
+      installPrompt = null;
+      document.getElementById('android-btn').style.display = 'none';
+      setTimeout(goToApp, 600);
+    }
+  });
+
+  function goToApp() {
+    if (location.protocol === 'file:') {
+      showServerNotice();
+      return;
+    }
+    sessionStorage.setItem('kf_role', 'schueler');
+    localStorage.setItem('kf_role', 'schueler');
+    location.replace('app.html?role=schueler');
+  }
+
+  function showServerNotice() {
+    document.body.innerHTML = `
+      <div style="max-width:420px;width:100%;text-align:center;margin:auto;">
+        <div class="logo-wrap"><img src="images/logo.png" alt="EDUBAN" onerror="this.style.display='none'"/></div>
+        <div class="role-badge">Lokaler Server nötig</div>
+        <h1>Bitte über die Startdatei öffnen</h1>
+        <p class="subtitle">Die App kann nicht direkt als Datei gestartet werden. Öffne im Projektordner <strong>StarteKanbanFlussalsSchueler.command</strong> oder starte einen lokalen Server.</p>
+      </div>`;
+  }
+
+  // Wiederkehrende SchülerInnen: automatisch weiterleiten wenn keine Installation nötig
+  const hasData = !!localStorage.getItem('kf_student_config') || !!localStorage.getItem('kanban_data');
+  if (hasData && !isIOS) {
+    redirectTimer = setTimeout(() => {
+      if (!installPrompt) goToApp();
+    }, 1200);
+  }
+
+  // Lucide Icons rendern
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+</script>
+</body>
+</html>
